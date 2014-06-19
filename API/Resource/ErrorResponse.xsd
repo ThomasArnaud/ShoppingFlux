@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Result" type="ResultType"/>
+  <xs:complexType name="ErrorType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Type"/>
+      <xs:element type="xs:string" name="Message"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ResponseType">
+    <xs:sequence>
+      <xs:element type="ErrorType" name="Error"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RequestType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Date"/>
+      <xs:element type="xs:string" name="Call"/>
+      <xs:element type="xs:string" name="Token"/>
+      <xs:element type="xs:string" name="Mode"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ResultType">
+    <xs:sequence>
+      <xs:element type="RequestType" name="Request"/>
+      <xs:element type="ResponseType" name="Response"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

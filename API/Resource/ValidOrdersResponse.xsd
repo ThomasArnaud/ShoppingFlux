@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file is part of the Thelia package.
+    Copyright (c) OpenStudio
+    email : dev@thelia.net
+    web : http://www.thelia.net
+
+    For the full copyright and license information, please view the LICENSE.txt
+    file that was distributed with this source code.
+
+    author: Benjamin Perche <bperche@openstudio.fr>
+-->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Result" type="ResultType"/>
+  <xs:complexType name="ResponseType">
+    <xs:sequence>
+      <xs:element type="OrdersType" name="Orders">
+        <xs:annotation>
+          <xs:documentation>more Order node here</xs:documentation>
+        </xs:annotation>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrderType">
+    <xs:sequence>
+      <xs:element name="IdOrder"/>
+      <xs:element name="Marketplace">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+              <xs:enumeration value="Amazon"/>
+              <xs:enumeration value="eBay"/>
+              <xs:enumeration value="Fnac"/>
+              <xs:enumeration value="Pixmania"/>
+              <xs:enumeration value="RueDuCommerce"/>
+              <xs:enumeration value="PriceMinister"/>
+              <xs:enumeration value="CDiscount"/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+      <xs:element type="xs:string" name="StatusUpdated"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrdersType">
+    <xs:sequence>
+      <xs:element type="OrderType" name="Order" maxOccurs="unbounded" minOccurs="1"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RequestType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Date"/>
+      <xs:element type="xs:string" name="Call"/>
+      <xs:element type="xs:string" name="Token"/>
+      <xs:element type="xs:string" name="Mode"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ResultType">
+    <xs:sequence>
+      <xs:element type="RequestType" name="Request"/>
+      <xs:element type="ResponseType" name="Response"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

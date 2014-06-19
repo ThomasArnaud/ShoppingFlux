@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="UpdateOrders" >
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="Order" minOccurs="1" maxOccurs="unbounded" >
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="IdOrder" type="xs:string" />
+                            <xs:element name="Marketplace">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="Amazon"/>
+                                        <xs:enumeration value="eBay"/>
+                                        <xs:enumeration value="Fnac"/>
+                                        <xs:enumeration value="Pixmania"/>
+                                        <xs:enumeration value="RueDuCommerce"/>
+                                        <xs:enumeration value="PriceMinister"/>
+                                        <xs:enumeration value="CDiscount"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="Status">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="Shipped"/>
+                                        <xs:enumeration value="Canceled"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="TrackingNumber" type="xs:string" minOccurs="0" />
+                            <xs:element name="TrackingUrl" type="xs:string" minOccurs="0" />
+                            <xs:element name="CarrierName" type="xs:string" minOccurs="0" />
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

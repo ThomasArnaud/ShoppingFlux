@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module>
+    <fullnamespace>ShoppingFlux\ShoppingFlux</fullnamespace>
+    <descriptive locale="en_US">
+        <title>ShoppingFlux</title>
+    </descriptive>
+    <descriptive locale="fr_FR">
+        <title>ShoppingFlux</title>
+    </descriptive>
+    <version>1.0</version>
+    <author>
+        <name>Benjamin Perche</name>
+        <email>bperche@openstudio.fr</email>
+    </author>
+    <type>classic</type>
+    <thelia>2.0.0</thelia>
+    <stability>alpha</stability>
+</module>

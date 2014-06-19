@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file is part of the Thelia package.
+    Copyright (c) OpenStudio
+    email : dev@thelia.net
+    web : http://www.thelia.net
+
+    For the full copyright and license information, please view the LICENSE.txt
+    file that was distributed with this source code.
+
+    author: Benjamin Perche <bperche@openstudio.fr>
+-->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Result" type="ResultType"/>
+  <xs:complexType name="ResponseType">
+    <xs:sequence>
+      <xs:element type="OrdersType" name="Orders"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="BillingAddressType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="LastName"/>
+      <xs:element type="xs:string" name="FirstName"/>
+      <xs:element type="xs:string" name="Phone"/>
+      <xs:element type="xs:string" name="Street"/>
+      <xs:element type="xs:string" name="PostalCode"/>
+      <xs:element type="xs:string" name="Town"/>
+      <xs:element type="xs:string" name="Country"/>
+      <xs:element type="xs:string" name="Email"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProductType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="SKU"/>
+      <xs:element type="xs:string" name="Quantity"/>
+      <xs:element type="xs:string" name="Price"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrderType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="IdOrder"/>
+      <xs:element type="xs:string" name="Marketplace"/>
+      <xs:element type="xs:string" name="TotalAmount"/>
+      <xs:element type="xs:string" name="TotalProducts"/>
+      <xs:element type="xs:string" name="TotalShipping"/>
+      <xs:element type="xs:string" name="NumberOfProducts"/>
+      <xs:element type="xs:string" name="OrderDate"/>
+      <xs:element type="BillingAddressType" name="BillingAddress"/>
+      <xs:element type="ShippingAddressType" name="ShippingAddress"/>
+      <xs:element type="ProductsType" name="Products"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ShippingAddressType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="LastName"/>
+      <xs:element type="xs:string" name="FirstName"/>
+      <xs:element type="xs:string" name="Phone"/>
+      <xs:element type="xs:string" name="Street"/>
+      <xs:element type="xs:string" name="PostalCode"/>
+      <xs:element type="xs:string" name="Town"/>
+      <xs:element type="xs:string" name="Country"/>
+      <xs:element type="xs:string" name="Email"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="OrdersType">
+    <xs:sequence>
+      <xs:element type="OrderType" name="Order" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ProductsType">
+    <xs:sequence>
+      <xs:element type="ProductType" name="Product" minOccurs="1" maxOccurs="unbounded" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="RequestType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="Date"/>
+      <xs:element type="xs:string" name="Call"/>
+      <xs:element type="xs:string" name="Token"/>
+      <xs:element type="xs:string" name="Mode"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ResultType">
+    <xs:sequence>
+      <xs:element type="RequestType" name="Request"/>
+      <xs:element type="ResponseType" name="Response"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
