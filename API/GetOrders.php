@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\API;
+use ShoppingFlux\API\Response\BaseResponse;
 
 /**
  * Class GetOrders
@@ -19,5 +20,13 @@ namespace ShoppingFlux\API;
  */
 class GetOrders extends AbstractWebService
 {
+    /**
+     * @param $rawData
+     * @return BaseResponse
+     */
+    public function parseResponse($rawData)
+    {
+        // TODO: Implement parseResponse() method.
+    }
 
 } 

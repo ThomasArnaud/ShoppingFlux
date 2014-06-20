@@ -14,6 +14,7 @@ namespace ShoppingFlux\API;
 use ShoppingFlux\API\Exception\InvalidModeException;
 use ShoppingFlux\API\Exception\MissingTokenException;
 use ShoppingFlux\API\Request;
+use ShoppingFlux\API\Response\BaseResponse;
 
 /**
  * Class AbstractWebService
@@ -57,6 +58,10 @@ abstract class AbstractWebService
      */
     protected $response = null;
 
+    /**
+     * @param null $token
+     * @param string $mode
+     */
     public function __construct($token = null, $mode = self::REQUEST_MODE_SANDBOX)
     {
         if($mode !== self::REQUEST_MODE_SANDBOX && $mode !== self::REQUEST_MODE_PRODUCTION) {
@@ -77,6 +82,10 @@ abstract class AbstractWebService
         return $this;
     }
 
+    /**
+     * @param bool $forceCall
+     * @return BaseResponse
+     */
     public function getResponse($forceCall = false)
     {
         if($this->response === null || @(bool)$forceCall ) {
@@ -84,6 +93,13 @@ abstract class AbstractWebService
         }
 
         return $this->response;
+    }
+
+    public function setResponse(BaseResponse $response)
+    {
+        $this->response = $response;
+
+        return $this;
     }
 
     public function addPostData($name, $value)
@@ -123,24 +139,13 @@ abstract class AbstractWebService
         $curlResponse = curl_exec($curl);
         curl_close($curl);
 
-        $this->response = $curlResponse;
-    }
-
-    /**
-     * @param Request $request
-     * @return $this
-     */
-    public function setRequest(Request $request)
-    {
-        $this->request = (string)$request;
-
-        return $this;
+        $this->response = $this->parseResponse($curlResponse);
     }
 
     /**
      * @return string
      *
-     * Then name of the function
+     * The name of the function, by default, the same as the class'
      */
     function getFunctionName()
     {
@@ -151,4 +156,9 @@ abstract class AbstractWebService
         return current($className);
     }
 
+    /**
+     * @param $rawData
+     * @return BaseResponse
+     */
+    abstract public function parseResponse($rawData);
 } 

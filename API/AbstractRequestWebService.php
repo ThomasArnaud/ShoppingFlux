@@ -69,6 +69,13 @@ abstract class AbstractRequestWebService extends AbstractWebService
         return $this->validationSchema;
     }
 
+    public function setRequest(Request $request)
+    {
+        $this->request = (string)$request;
+
+        return $this;
+    }
+
     /**
      * @return string
      *

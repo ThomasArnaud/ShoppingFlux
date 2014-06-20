@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\API;
+use ShoppingFlux\API\Response\BaseResponse;
 
 /**
  * Class UpdateOrders
@@ -19,5 +20,13 @@ namespace ShoppingFlux\API;
  */
 class UpdateOrders extends AbstractRequestWebService
 {
+    /**
+     * @param $rawData
+     * @return BaseResponse
+     */
+    public function parseResponse($rawData)
+    {
+        // TODO: Implement parseResponse() method.
+    }
 
 } 

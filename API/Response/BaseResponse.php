@@ -22,6 +22,16 @@ use ShoppingFlux\API\Exception\BadResponseException;
 abstract class BaseResponse
 {
     /**
+     * Those constants are used by getGroup, they define the type of data this method
+     * has to return
+     */
+    const GROUP_STRUCT_ARRAY = "array";
+
+    const GROUP_STRUCT_OBJECT = "object";
+
+    const GROUP_STRUCT_DOM_NODE = "domNode";
+
+    /**
      * @var string
      *
      * Directory where are the xsd corresponding to XMLs
@@ -50,6 +60,13 @@ abstract class BaseResponse
     protected $hasError = false;
 
     /**
+     * @var array
+     *
+     * List of the structures available for groups
+     */
+    protected $structures = array();
+
+    /**
      * @param string $rawData Raw XML data
      *
      * Check if the response is valid, and if it is an error
@@ -66,20 +83,26 @@ abstract class BaseResponse
                 throw new \Exception();
             }
 
-            if(!$xml->schemaValidate($this->resourceFolder . $this->getXSDFileName() . "xsd")) {
-                if(!$xml->schemaValidate($this->resourceFolder . "ErrorResponse.xsd")) {
-                    throw new \Exception();
-                }
-
+            try {
+                $xml->schemaValidate($this->resourceFolder . $this->getXSDFileName() . ".xsd");
+            } catch(\Exception $e) {
+                $xml->schemaValidate($this->resourceFolder . "ErrorResponse.xsd");
                 $this->hasError = true;
             }
 
         } catch(\Exception $e) {
-            throw new BadResponseException("The response is not a valid Shopping Flux response");
+            throw new BadResponseException(
+                "The response is not a valid Shopping Flux response"
+            );
         }
 
         $this->rawData = $rawData;
         $this->xml = $xml;
+        $this->structures = [
+            self::GROUP_STRUCT_ARRAY,
+            self::GROUP_STRUCT_OBJECT,
+            self::GROUP_STRUCT_DOM_NODE
+        ];
     }
 
     public function getError()
@@ -122,7 +145,7 @@ abstract class BaseResponse
         return $this->get("Mode");
     }
 
-    public function get($key, $index = 0)
+    public function get($key, $index = 0, $textContent = true)
     {
         $list = $this->xml->getElementsByTagName($key);
 
@@ -132,9 +155,52 @@ abstract class BaseResponse
             $index = 0;
         }
 
-        return $list->item($index)->textContent;
+        $item = $list->item($index);
+
+        return ($textContent ? $item->textContent : $item);
     }
 
+    public function getGroup($key, $as = self::GROUP_STRUCT_ARRAY)
+    {
+        switch($as) {
+            case self::GROUP_STRUCT_ARRAY:
+                return $this->getGroupAsArray($key);
+
+            case self::GROUP_STRUCT_OBJECT:
+                return $this->getGroupAsObject($key);
+
+            case self::GROUP_STRUCT_DOM_NODE:
+                return $this->getGroupAsDomNode($key);
+
+            default:
+                throw new \Exception("The group structure ".$as." isn't available");
+        }
+    }
+
+    protected function getGroupAsArray($key)
+    {
+        $item = $this->getGroupAsDomNode($key);
+
+        $xml = new \SimpleXMLElement($item->C14N());
+        $arrayXML = json_decode(json_encode($xml), true);
+
+        return $arrayXML;
+    }
+
+    protected function getGroupAsObject($key)
+    {
+        $item = $this->getGroupAsDomNode($key);
+
+        $xml = new \SimpleXMLElement($item->C14N());
+        $objectXML = json_decode(json_encode($xml));
+
+        return $objectXML;
+    }
+
+    protected function getGroupAsDomNode($key)
+    {
+        return $this->get($key, 0, false);
+    }
     /**
      * @return string
      *

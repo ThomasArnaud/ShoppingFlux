@@ -37,6 +37,8 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->request = new Request("UpdateOrders");
 
         $this->webservice->setRequest($this->request);
+
+
     }
 
     /**
@@ -69,7 +71,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
     public function testExport()
     {
-
         $this->request
             ->addOrder([
                 "IdOrder" => "12345",
