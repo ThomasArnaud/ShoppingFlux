@@ -13,6 +13,7 @@
 namespace ShoppingFlux\API;
 use ShoppingFlux\API\Exception\InvalidRequestException;
 use ShoppingFlux\API\Exception\MissingFileException;
+use ShoppingFlux\API\Response\BaseResponse;
 
 /**
  * Class AbstractRequestWebService
@@ -53,6 +54,9 @@ abstract class AbstractRequestWebService extends AbstractWebService
         $this->validationSchema = file_get_contents($file);
     }
 
+
+
+
     protected function call()
     {
         if($this->request === null || !$this->request->isValid($this->validationSchema)) {
@@ -86,4 +90,6 @@ abstract class AbstractRequestWebService extends AbstractWebService
     {
         return $this->getFunctionName();
     }
+
+
 } 

@@ -16,6 +16,10 @@ use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
+use Thelia\Model\LangQuery;
+use Thelia\Model\Module;
+use Thelia\Model\ModuleQuery;
+use Thelia\Module\AbstractDeliveryModule;
 
 /**
  * Class ConfigureForm
@@ -46,20 +50,55 @@ class ConfigureForm extends BaseForm
      */
     protected function buildForm()
     {
+        $lang = LangQuery::create()
+            ->findOneByLocale($this->getRequest()->getPreferredLanguage())
+            ;
+
+        if($lang === null) {
+            throw new \ErrorException("The locale ".$this->getRequest()->getPreferredLanguage()." doesn't exist");
+        }
+
+        $langsId = LangQuery::create()
+            ->select("Id")
+            ->find()
+            ->toArray();
+
+        $deliveryModulesId = ModuleQuery::create()
+            ->filterByType(AbstractDeliveryModule::DELIVERY_MODULE_TYPE)
+            ->select("Id")
+            ->find()
+            ->toArray()
+        ;
+
         $translator = Translator::getInstance();
         $this->formBuilder
             ->add("token", "text", array(
                 "label" => $translator->trans("ShoppingFlux Token", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for"=>"shopping_flux_token"],
+                "label_attr" => ["for" => "shopping_flux_token"],
                 "constraints" => [new NotBlank()],
                 "required"  => true,
                 "data" => ShoppingFluxConfigQuery::getToken(),
             ))
             ->add("prod", "checkbox", array(
                 "label" => $translator->trans("In production", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for"=>"shopping_flux_prod"],
+                "label_attr" => ["for" => "shopping_flux_prod"],
                 "required" => false,
                 "data" => ShoppingFluxConfigQuery::getProd(),
+            ))
+            ->add("delivery_module_id", "choice", array(
+                "label" => $translator->trans("Delivery module", [], ShoppingFlux::MESSAGE_DOMAIN),
+                "label_attr" => ["for" => "shopping_flux_delivery_module_id"],
+                "required" => true,
+                "multiple" => false,
+                "choices" => $deliveryModulesId,
+                "data" => ShoppingFluxConfigQuery::getDeliveryModule()->getId(),
+            ))
+            ->add("lang_id", "choice", array(
+                "label" => $translator->trans("Language", [], ShoppingFlux::MESSAGE_DOMAIN),
+                "label_attr" => ["for" => "shopping_flux_lang"],
+                "required" => true,
+                "choices" => $langsId,
+                "data" => $lang->getId(),
             ))
         ;
     }

@@ -160,6 +160,12 @@ abstract class BaseResponse
         return ($textContent ? $item->textContent : $item);
     }
 
+    /**
+     * @param $key
+     * @param string $as
+     * @return \DOMNode|array|Object|string
+     * @throws \Exception
+     */
     public function getGroup($key, $as = self::GROUP_STRUCT_ARRAY)
     {
         switch($as) {
@@ -195,6 +201,11 @@ abstract class BaseResponse
         $objectXML = json_decode(json_encode($xml));
 
         return $objectXML;
+    }
+
+    public function isInError()
+    {
+        return $this->hasError;
     }
 
     protected function getGroupAsDomNode($key)

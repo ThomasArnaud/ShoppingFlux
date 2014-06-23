@@ -10,13 +10,14 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace ShoppingFlux;
+namespace ShoppingFlux\API\Response;
 
-use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
-use Thelia\Module\BaseModule;
-
-class ShoppingFlux extends BaseModule
+/**
+ * Class ValidOrdersResponse
+ * @package ShoppingFlux\API\Response
+ * @author Benjamin Perche <bperche@openstudio.fr>
+ */
+class ValidOrdersResponse extends BaseResponse
 {
-    const MESSAGE_DOMAIN = "shoppingflux";
-}
+
+} 

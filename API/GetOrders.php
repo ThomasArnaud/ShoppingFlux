@@ -12,6 +12,7 @@
 
 namespace ShoppingFlux\API;
 use ShoppingFlux\API\Response\BaseResponse;
+use ShoppingFlux\API\Response\GetOrdersResponse;
 
 /**
  * Class GetOrders
@@ -20,13 +21,22 @@ use ShoppingFlux\API\Response\BaseResponse;
  */
 class GetOrders extends AbstractWebService
 {
-    /**
-     * @param $rawData
-     * @return BaseResponse
-     */
-    public function parseResponse($rawData)
-    {
-        // TODO: Implement parseResponse() method.
-    }
 
+    /**
+     * @param $dataStruct
+     * @param $data
+     * @return array|\DOMNode|Object|string
+     */
+    public function parseResponse($dataStruct, $data)
+    {
+        $response = new GetOrdersResponse($data);
+
+        if($response->isInError()) {
+            $return = $response->getError();
+        } else {
+            $return = $response->getGroup("Orders", $dataStruct);
+        }
+
+        return $return;
+    }
 } 

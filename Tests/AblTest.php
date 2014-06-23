@@ -10,13 +10,20 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace ShoppingFlux;
+namespace ShoppingFlux\Tests;
 
-use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
-use Thelia\Module\BaseModule;
 
-class ShoppingFlux extends BaseModule
+use Thelia\Model\LangQuery;
+
+class AblTest extends \PHPUnit_Framework_TestCase
 {
-    const MESSAGE_DOMAIN = "shoppingflux";
+    public function testa() {
+        $a = LangQuery::create()
+            ->select("Id")
+            ->find()
+            ->toArray();
+
+        var_dump($a);
+    }
 }
+ 

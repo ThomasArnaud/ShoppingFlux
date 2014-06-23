@@ -52,7 +52,7 @@ abstract class AbstractWebService
     protected $postData = array();
 
     /**
-     * @var null|string
+     * @var null|BaseResponse
      *
      * The response of the webservice
      */
@@ -86,10 +86,11 @@ abstract class AbstractWebService
      * @param bool $forceCall
      * @return BaseResponse
      */
-    public function getResponse($forceCall = false)
+    public function getResponse($dataStruct = BaseResponse::GROUP_STRUCT_ARRAY, $forceCall = false)
     {
         if($this->response === null || @(bool)$forceCall ) {
-            $this->call();
+            $data = $this->call();
+            $this->response = $this->parseResponse($dataStruct, $data);
         }
 
         return $this->response;
@@ -139,7 +140,7 @@ abstract class AbstractWebService
         $curlResponse = curl_exec($curl);
         curl_close($curl);
 
-        $this->response = $this->parseResponse($curlResponse);
+        return $curlResponse;
     }
 
     /**
@@ -156,9 +157,5 @@ abstract class AbstractWebService
         return current($className);
     }
 
-    /**
-     * @param $rawData
-     * @return BaseResponse
-     */
-    abstract public function parseResponse($rawData);
+    abstract protected function parseResponse($dataStruct, $data);
 } 

@@ -80,32 +80,32 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
                             <NumberOfProducts>1</NumberOfProducts>
                             <OrderDate>2011-07-08T15:32:53+02:00</OrderDate>
                             <BillingAddress>
-                            <LastName>Nom</LastName>
-                            <FirstName/>
-                            <Phone>0123456789</Phone>
-                            <Street>1 rue du paradis</Street>
-                            <PostalCode>75000</PostalCode>
-                            <Town>Paris</Town>
-                            <Country>FR</Country>
-                            <Email/>
+                                <LastName>Nom</LastName>
+                                <FirstName/>
+                                <Phone>0123456789</Phone>
+                                <Street>1 rue du paradis</Street>
+                                <PostalCode>75000</PostalCode>
+                                <Town>Paris</Town>
+                                <Country>FR</Country>
+                                <Email/>
                             </BillingAddress>
                             <ShippingAddress>
-                            <LastName>Nom</LastName>
-                            <FirstName/>
-                            <Phone>0123456789</Phone>
-                            <Street>1 rue du paradis</Street>
-                            <PostalCode>75000</PostalCode>
-                            <Town>Paris</Town>
-                            <Country>FR</Country>
-                            <Email/>
+                                <LastName>Nom</LastName>
+                                <FirstName/>
+                                <Phone>0123456789</Phone>
+                                <Street>1 rue du paradis</Street>
+                                <PostalCode>75000</PostalCode>
+                                <Town>Paris</Town>
+                                <Country>FR</Country>
+                                <Email/>
                             </ShippingAddress>
                             <Products>
-                            <Product>
-                            <SKU>1234</SKU>
-                            <Quantity>1</Quantity>
-                            <Price>7.99</Price>
-                            </Product>
-                        </Products>
+                                <Product>
+                                    <SKU>1234</SKU>
+                                    <Quantity>1</Quantity>
+                                    <Price>7.99</Price>
+                                </Product>
+                            </Products>
                         </Order>
                     </Orders>
                 </Response>
@@ -134,14 +134,55 @@ XML;
             $response->getMode()
         );
 
-        /*var_dump($response->getGroup("Orders"));
+        /**
+         * Good to know: empty tags (like: <email />) preduces an empty array, not a empty string in getGroup
+         */
+        $expected = [
+            "Order" => [
+                "IdOrder" => "123456820006-123456127010",
+                "Marketplace"=>"eBay",
+                "TotalAmount"=>"10.99",
+                "TotalProducts"=>"7.99",
+                "TotalShipping"=>"3.0",
+                "NumberOfProducts"=>"1",
+                "OrderDate"=>"2011-07-08T15:32:53+02:00",
+                "BillingAddress" => [
+                    "LastName"=>"Nom",
+                    "FirstName"=>[],
+                    "Phone"=>"0123456789",
+                    "Street"=>"1 rue du paradis",
+                    "PostalCode"=>"75000",
+                    "Town"=>"Paris",
+                    "Country"=>"FR",
+                    "Email"=>[],
+                ],
+                "ShippingAddress"=> [
+                    "LastName"=>"Nom",
+                    "FirstName"=>[],
+                    "Phone"=>"0123456789",
+                    "Street"=>"1 rue du paradis",
+                    "PostalCode"=>"75000",
+                    "Town"=>"Paris",
+                    "Country"=>"FR",
+                    "Email"=>[],
+                ],
+                "Products" => [
+                    "Product" => [
+                        "SKU"=>"1234",
+                        "Quantity"=>"1",
+                        "Price"=>"7.99",
+                    ],
+                ],
+            ],
+        ];
 
-        $array = [];
-        $this->assertEquals(
-            json_encode($array),
-            json_encode($response->getGroup("Orders"))
-        );*/
+        /** @var array $result */
+        $result = $response->getGroup("Orders");
 
+        sort($expected);
+        sort($result);
+
+        $this->assertEquals($expected,$result);
     }
 
 }
