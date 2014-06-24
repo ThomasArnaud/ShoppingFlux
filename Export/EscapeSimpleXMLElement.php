@@ -10,20 +10,19 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace ShoppingFlux\Tests;
+namespace ShoppingFlux\Export;
+use SimpleXMLElement;
 
-
-use Thelia\Model\LangQuery;
-
-class AblTest extends \PHPUnit_Framework_TestCase
+/**
+ * Class EscapeSimpleXMLElement
+ * @package ShoppingFlux\Export
+ * @author Benjamin Perche <bperche@openstudio.fr>
+ */
+class EscapeSimpleXMLElement extends \SimpleXMLElement
 {
-    public function testa() {
-        $a = LangQuery::create()
-            ->select("Id")
-            ->find()
-            ->toArray();
-
-        var_dump($a);
+    public function addChild($name, $value = null, $namespace = null)
+    {
+        return parent::addChild(htmlspecialchars($name), htmlspecialchars($value), $namespace);
     }
-}
- 
+
+} 

@@ -11,10 +11,11 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Export;
+use Thelia\Model\CategoryQuery;
 use Thelia\Model\CountryQuery;
+use Thelia\Model\FeatureQuery;
+use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
-use Thelia\Tools\URL;
-
 /**
  * Class XMLExportProducts
  * @package ShoppingFlux\Export
@@ -35,13 +36,13 @@ class XMLExportProducts
 
     protected $xml;
 
-    public function __construct($root = null, $locale = "en_US")
+    public function __construct($locale = "en_US", $root = null)
     {
         if ($root !== null) {
             $this->root = $root;
         }
 
-        $this->xml = new \SimpleXMLElement("<$root></$root>");
+        $this->xml = new EscapeSimpleXMLElement("<{$this->root}></{$this->root}>");
         $this->locale = $locale;
     }
 
@@ -59,7 +60,7 @@ class XMLExportProducts
 
             $node->addChild("id_parent", $product->getId());
             $node->addChild("nom", $product->getTitle());
-            $node->addChild(
+            /*$node->addChild(
                 "url",
                 URL::getInstance()->absoluteUrl(
                     "/",
@@ -68,32 +69,108 @@ class XMLExportProducts
                         "product_id" => $product->getId(),
                     ]
                 )
-            );
-            $node->addChild("description", $product->getDescription());
+            );*/
             $node->addChild("description-courte", $product->getChapo());
+            $node->addChild("description", $product->getDescription());
 
             // Delai de livraison - check if the module is installed
+            $deliveryDateModule = ModuleQuery::create()
+                ->findOneByCode("DeliveryDate");
+            $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
+
             // Marque - check if there's one
-            // Rayon ??
+            $node->addChild("marque");
+            $node->addChild("url-marque");
+
+            /**
+             * Compute breadcrumb
+             */
+            $breadcrumb = [];
+            $category = $product->getCategories()[0];
+            $lastCategory = $category->getTitle();
+
+            do {
+                $breadcrumb[] = $category->getTitle();
+            } while(null !== $category = CategoryQuery::create()->findPk($category->getParent()));
+
+            $reversedBreadcrumb = array_reverse($breadcrumb);
+
+            $node->addChild("rayon", $lastCategory);
+            $node->addChild("fil-ariane", implode(" > ", $reversedBreadcrumb));
+
+            /**
+             * Get VAT
+             */
             $node->addChild("tva");
+
+            /**
+             * Features
+             */
+            $featuresNode = $node->addChild("caracteristiques");
+            foreach ($product->getFeatureProducts() as $featureProduct) {
+                $featuresNode->addChild(
+                    $featureProduct->getFeature()->getTitle(),
+                    $featureProduct->getFeatureAv()->getTitle()
+                );
+            }
+
+
+
             //PSE
             $productSaleElements =  $product->getProductSaleElementss();
 
-            if(count($productSaleElements)) {
-                $pses_node = $node->addChild("declinaisons");
-                /** @var \Thelia\Model\ProductSaleElements $pse */
-                foreach($productSaleElements as $pse) {
-                    $pse_node = $pses_node->addChild("declinaison");
-                    $pse_node->addChild("prix", $pse->getTaxedPrice($country));
-                    $pse_node->addChild("prix-barre");
-                    $pse_node->addChild("quantite", $pse->getQuantity());
-                    $pse_node->addChild("ean", $pse->getEanCode());
-                    $pse_node->addChild("poids", $pse->getWeight());
-                    $pse_node->addChild("ecotaxe");
+            $psesNode = $node->addChild("declinaisons");
 
+            /** @var \Thelia\Model\ProductSaleElements $pse */
+            foreach($productSaleElements as $pse) {
+                $deliveryTimeMin = null;
+                $deliveryTimeMax = null;
+
+                /**
+                 * Handle the delivery time if the module exists
+                 */
+                if($deliveryDateModuleExists) {
+                    $deliveryDate = \DeliveryDate\Model\ProductDateQuery::create()
+                        ->findPk($pse->getId());
+
+                    $deliveryTimeMin = $pse->getQuantity() ?
+                        $deliveryDate->getDeliveryTimeMin() :
+                        $deliveryDate->getRestockTimeMin()
+                    ;
+                    $deliveryTimeMax = $pse->getQuantity() ?
+                        $deliveryDate->getDeliveryTimeMax() :
+                        $deliveryDate->getRestockTimeMax()
+                    ;
                 }
+
+                $pseNode = $psesNode->addChild("declinaison");
+                $pseNode->addChild("id_enfant", $pse->getId());
+                //$pse_node->addChild("prix", $pse->getTaxedPrice($country));
+                $pseNode->addChild("prix-barre");
+                $pseNode->addChild("quantite", $pse->getQuantity());
+                $pseNode->addChild("ean", $pse->getEanCode());
+                $pseNode->addChild("poids", $pse->getWeight());
+                $pseNode->addChild("ecotaxe");
+                $pseNode->addChild("delai-livraison-mini",$deliveryTimeMin);
+                $pseNode->addChild("delai-livraison-maxi",$deliveryTimeMax);
+
+                $pseAttrNode = $pseNode->addChild("attributs");
+                /** @var \Thelia\Model\AttributeCombination $attr */
+                foreach($pse->getAttributeCombinations() as $attr) {
+                    $pseAttrNode->addChild(
+                        $attr->getAttribute()->getTitle(),
+                        $attr->getAttributeAv()->getTitle()
+                    );
+                }
+
             }
+
         }
+        $dom = new \DOMDocument("1.0");
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($this->xml->asXML());
+        return$dom->saveXML();
     }
 
 
