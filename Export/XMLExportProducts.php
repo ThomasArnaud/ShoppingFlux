@@ -16,6 +16,8 @@ use Thelia\Model\CountryQuery;
 use Thelia\Model\FeatureQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
+use Thelia\Tools\URL;
+
 /**
  * Class XMLExportProducts
  * @package ShoppingFlux\Export
@@ -60,7 +62,7 @@ class XMLExportProducts
 
             $node->addChild("id_parent", $product->getId());
             $node->addChild("nom", $product->getTitle());
-            /*$node->addChild(
+            $node->addChild(
                 "url",
                 URL::getInstance()->absoluteUrl(
                     "/",
@@ -69,16 +71,19 @@ class XMLExportProducts
                         "product_id" => $product->getId(),
                     ]
                 )
-            );*/
+            );
             $node->addChild("description-courte", $product->getChapo());
             $node->addChild("description", $product->getDescription());
 
-            // Delai de livraison - check if the module is installed
+            // Delivery delay - check if the module is installed
             $deliveryDateModule = ModuleQuery::create()
                 ->findOneByCode("DeliveryDate");
             $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
 
-            // Marque - check if there's one
+            /**
+             * Brand - check if there's one
+             * TODO
+             */
             $node->addChild("marque");
             $node->addChild("url-marque");
 
@@ -100,6 +105,7 @@ class XMLExportProducts
 
             /**
              * Get VAT
+             * TODO
              */
             $node->addChild("tva");
 
@@ -114,9 +120,9 @@ class XMLExportProducts
                 );
             }
 
-
-
-            //PSE
+            /**
+             * Compute product sale elements
+             */
             $productSaleElements =  $product->getProductSaleElementss();
 
             $psesNode = $node->addChild("declinaisons");
@@ -145,6 +151,10 @@ class XMLExportProducts
 
                 $pseNode = $psesNode->addChild("declinaison");
                 $pseNode->addChild("id_enfant", $pse->getId());
+                /**
+                 * Get price
+                 * TODO
+                 */
                 //$pse_node->addChild("prix", $pse->getTaxedPrice($country));
                 $pseNode->addChild("prix-barre");
                 $pseNode->addChild("quantite", $pse->getQuantity());
@@ -170,7 +180,7 @@ class XMLExportProducts
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($this->xml->asXML());
-        return$dom->saveXML();
+        return $dom->saveXML();
     }
 
 
