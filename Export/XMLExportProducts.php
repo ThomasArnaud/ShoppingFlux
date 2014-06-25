@@ -115,10 +115,6 @@ class XMLExportProducts
                 ->findOneByCode("DeliveryDate");
             $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
 
-            /**
-             * Brand - check if there's one
-             * TODO
-             */
             $node->addChild("marque");
             $node->addChild("url-marque");
 
@@ -240,10 +236,6 @@ class XMLExportProducts
                     );
                 }
 
-                /**
-                 * Discount FROM - TO
-                 * TODO
-                 */
                 $pseNode->addChild("promo-de");
                 $pseNode->addChild("promo-a");
             }
