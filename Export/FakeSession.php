@@ -10,26 +10,39 @@
 /*      file that was distributed with this source code.                             */
 /*************************************************************************************/
 
-namespace ShoppingFlux\API;
-use ShoppingFlux\API\Response\BaseResponse;
-use ShoppingFlux\API\Response\GetOrdersResponse;
+namespace ShoppingFlux\Export;
+use Thelia\Core\HttpFoundation\Session\Session;
+use Thelia\Exception\InvalidCartException;
+use Thelia\Model\Cart;
+use Thelia\Model\CartQuery;
 
 /**
- * Class GetOrders
- * @package ShoppingFlux\API
+ * Class FakeSession
+ * @package ShoppingFlux\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class GetOrders extends AbstractWebService
+class FakeSession extends Session
 {
     /**
-     * @param $dataStruct
-     * @param $data
-     * @return GetOrdersResponse
+     * @var Cart $cart Cart object used to compute the price
      */
-    public function parseResponse($dataStruct, $data)
-    {
-        $response = new GetOrdersResponse($data);
+    protected $cart;
 
-        return $response;
+    /**
+     * @param Cart $cart
+     * @return $this
+     */
+    public function setCart($cart)
+    {
+        $this->cart = $cart;
+
+        return $this;
     }
+
+    public function getCart()
+    {
+        return $this->cart;
+    }
+
+
 } 

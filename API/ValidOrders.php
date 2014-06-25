@@ -23,19 +23,13 @@ class ValidOrders extends AbstractRequestWebService
     /**
      * @param $dataStruct
      * @param $data
-     * @return array|\DOMNode|Object|string
+     * @return ValidOrdersResponse
      */
     protected function parseResponse($dataStruct, $data)
     {
         $response = new ValidOrdersResponse($data);
 
-        if($response->isInError()) {
-            $return = $response->getError();
-        } else {
-            $return = $response->getGroup("Orders", $dataStruct);
-        }
-
-        return $return;
+        return $response;
     }
 
 } 

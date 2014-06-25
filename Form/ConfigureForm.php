@@ -19,6 +19,7 @@ use Thelia\Form\BaseForm;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\TaxQuery;
 use Thelia\Module\AbstractDeliveryModule;
 
 /**
@@ -50,9 +51,12 @@ class ConfigureForm extends BaseForm
      */
     protected function buildForm()
     {
+        /**
+         * Get information
+         */
         $lang = LangQuery::create()
-            ->findOneByLocale($this->getRequest()->getPreferredLanguage())
-            ;
+            ->findOneByCode($this->getRequest()->getPreferredLanguage())
+        ;
 
         if($lang === null) {
             throw new \ErrorException("The locale ".$this->getRequest()->getPreferredLanguage()." doesn't exist");
@@ -61,7 +65,9 @@ class ConfigureForm extends BaseForm
         $langsId = LangQuery::create()
             ->select("Id")
             ->find()
-            ->toArray();
+            ->toArray()
+        ;
+        $langsId = array_flip($langsId);
 
         $deliveryModulesId = ModuleQuery::create()
             ->filterByType(AbstractDeliveryModule::DELIVERY_MODULE_TYPE)
@@ -69,8 +75,21 @@ class ConfigureForm extends BaseForm
             ->find()
             ->toArray()
         ;
+        $deliveryModulesId = array_flip($deliveryModulesId);
+
+        $taxesId = TaxQuery::create()
+            ->filterByType("Thelia\\TaxEngine\\TaxType\\FixAmountTaxType")
+            ->select("Id")
+            ->find()
+            ->toArray()
+        ;
+        $taxesId = array_flip($taxesId);
 
         $translator = Translator::getInstance();
+
+        /**
+         * Then build the form
+         */
         $this->formBuilder
             ->add("token", "text", array(
                 "label" => $translator->trans("ShoppingFlux Token", [], ShoppingFlux::MESSAGE_DOMAIN),
@@ -91,14 +110,28 @@ class ConfigureForm extends BaseForm
                 "required" => true,
                 "multiple" => false,
                 "choices" => $deliveryModulesId,
-                "data" => ShoppingFluxConfigQuery::getDeliveryModule()->getId(),
+                "data" => ShoppingFluxConfigQuery::getDeliveryModuleId(),
             ))
             ->add("lang_id", "choice", array(
                 "label" => $translator->trans("Language", [], ShoppingFlux::MESSAGE_DOMAIN),
                 "label_attr" => ["for" => "shopping_flux_lang"],
                 "required" => true,
+                "multiple" => false,
                 "choices" => $langsId,
                 "data" => $lang->getId(),
+            ))
+            ->add("ecotax_id", "choice", array(
+                "label" => $translator->trans("Ecotax rule", [], ShoppingFlux::MESSAGE_DOMAIN),
+                "label_attr" => ["for" => "shopping_flux_ecotax"],
+                "required" => true,
+                "choices" => $taxesId,
+                "multiple" => false,
+                "data" => ShoppingFluxConfigQuery::getEcotaxRuleId(),
+            ))
+            ->add("action_type", "choice", array(
+                "required" => true,
+                "choices" => ["save"=>0, "export"=>1],
+                "multiple" => false,
             ))
         ;
     }

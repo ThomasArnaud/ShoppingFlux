@@ -1,0 +1,141 @@
+<div class="general-block-decorator">
+    <div class="row">
+        <div class="col-md-12 title title-without-tabs">
+            {intl l="Export your catalog" d="shoppingflux.ai"}
+        </div>
+    </div>
+    {form name="shoppingflux.configure"}
+    {if $form_error}
+        <div class="row">
+            <div class="col-md-12">
+                <div class="alert alert-danger">
+                    {$form_error_message}
+                </div>
+            </div>
+        </div>
+    {/if}
+
+    {if $success_message}
+        <div class="alert alert-success">
+            {$success_message}
+        </div>
+    {/if}
+        <form method="post" action="{url path='/admin/module/ShoppingFlux/export'}">
+            {form_hidden_fields form=$form}
+            <div class="row">
+                <div class="col-md-6">
+                    {form_field form=$form field="token"}
+                        <div class="form-group {if $error}has-error{/if}">
+                            <label for="{$label_attr.for}">
+                                {$label}
+                            </label>
+
+                            <input type="text" name="{$name}" value="{$value}" placeholder="{$label}" class="form-control" id="{$label_attr.for}" required/>
+
+                            {if $error }
+                                <span class="help-block">{$message}</span>
+                            {/if}
+                        </div>
+                    {/form_field}
+                </div>
+                <div class="col-md-6">
+                    {form_field form=$form field="lang_id"}
+                        <div class="form-group {if $error}has-error{/if}">
+                            <label for="{$label_attr.for}">
+                                {$label}
+                            </label>
+
+                            <select name="{$name}" id="{$label_attr.for}" class="form-control">
+                                <optgroup label="{intl l='Language' d='shoppingflux.ai'}">
+                                    {loop type="lang" name="shoppingflux.configure.lang"}
+                                        <option value="{$ID}" {if $ID == $value}selected{/if}>{$TITLE}</option>
+                                    {/loop}
+                                </optgroup>
+                            </select>
+
+                            {if $error }
+                                <span class="help-block">{$message}</span>
+                            {/if}
+                        </div>
+                    {/form_field}
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-6">
+                    {form_field form=$form field="delivery_module_id"}
+                        <div class="form-group {if $error}has-error{/if}">
+                            <label for="{$label_attr.for}">
+                                {$label}
+                            </label>
+
+                            <select name="{$name}" id="{$label_attr.for}" class="form-control">
+                                <optgroup label="{intl l='Delivery module' d='shoppingflux.ai'}">
+                                    {loop type="module" module_type="2" name="shoppingflux.configure.delivery.module"}
+                                        <option value="{$ID}" {if $ID == $value}selected{/if}>{$TITLE}</option>
+                                    {/loop}
+                                </optgroup>
+                            </select>
+
+                            {if $error }
+                                <span class="help-block">{$message}</span>
+                            {/if}
+                        </div>
+                    {/form_field}
+                </div>
+                <div class="col-md-6">
+                    {form_field form=$form field="ecotax_id"}
+                        <div class="form-group {if $error}has-error{/if}">
+                            <label for="{$label_attr.for}">
+                                {$label}
+                            </label>
+
+                            <select name="{$name}" id="{$label_attr.for}" class="form-control">
+                                <optgroup label="{intl l='Choose your Ecotax' d='shoppingflux.ai'}">
+                                    {loop type="tax" name="shoppingflux.configure.ecotax"}
+                                        {if $ESCAPED_TYPE == "Thelia-TaxEngine-TaxType-FixAmountTaxType"}
+                                        <option value="{$ID}" {if $ID == $value}selected{/if}>{$TITLE}</option>
+                                        {/if}
+                                    {/loop}
+                                </optgroup>
+                            </select>
+
+                            {if $error }
+                                <span class="help-block">{$message}</span>
+                            {/if}
+                        </div>
+                    {/form_field}
+                </div>
+            </div>
+            <br/>
+            <div class="row">
+                <div class="col-md-6">
+                    {form_field form=$form field="prod"}
+                        <div class="col-md-3">
+                            <label for="{$label_attr.for}">
+                                {$label}
+                            </label>
+                        </div>
+                        <div class="col-md-9">
+                            <div class="switch-small shoppingflux-switch" data-id="0" data-on="success" data-off="danger" data-on-label="<i class='glyphicon glyphicon-ok-circle'></i>" data-off-label="<i class='glyphicon glyphicon-remove-circle'></i>">
+                                <input type="checkbox" id="{$label_attr.for}" name="{$name}" {if $data}checked{/if} />
+                            </div>
+                        </div>
+                    {/form_field}
+                </div>
+                <div class="col-md-6">
+                    {form_field form=$form field="action_type"}
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-default" value="save" name="{$name}">
+                                {intl l="Save" d="shoppingflux.ai"}
+                            </button>
+                            <button type="submit" class="btn btn-primary" value="export" name="{$name}">
+                                {intl l="Export" d="shoppingflux.ai"}
+                            </button>
+                        </div>
+                    {/form_field}
+                </div>
+            </div>
+        </form>
+    {/form}
+</div>

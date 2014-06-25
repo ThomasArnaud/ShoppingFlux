@@ -11,11 +11,18 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Export;
+use ShoppingFlux\Model\ShoppingFluxConfigQuery;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Thelia\Core\HttpFoundation\Request;
+use Thelia\Model\Cart;
+use Thelia\Model\CartItem;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\CountryQuery;
-use Thelia\Model\FeatureQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
+use Thelia\Model\TaxQuery;
+use Thelia\Module\Exception\DeliveryException;
+use Thelia\TaxEngine\TaxEngine;
 use Thelia\Tools\URL;
 
 /**
@@ -36,9 +43,14 @@ class XMLExportProducts
 
     protected $locale;
 
+    /**
+     * @var ContainerInterface
+     */
+    protected $container;
+
     protected $xml;
 
-    public function __construct($locale = "en_US", $root = null)
+    public function __construct(ContainerInterface $containerInterface, $locale = "en_US", $root = null)
     {
         if ($root !== null) {
             $this->root = $root;
@@ -46,6 +58,7 @@ class XMLExportProducts
 
         $this->xml = new EscapeSimpleXMLElement("<{$this->root}></{$this->root}>");
         $this->locale = $locale;
+        $this->container = $containerInterface;
     }
 
     public function doExport()
@@ -53,6 +66,28 @@ class XMLExportProducts
         /** @var \Thelia\Model\Country $country */
         $country = CountryQuery::create()
             ->findOneByShopCountry(true);
+
+        $taxId = ShoppingFluxConfigQuery::getEcotaxRuleId();
+        $tax = TaxQuery::create()->findPk($taxId);
+
+        $deliveryModuleModelId = ShoppingFluxConfigQuery::getDeliveryModuleId();
+        $deliveryModuleModel = ModuleQuery::create()->findPk($deliveryModuleModelId);
+        /** @var \Thelia\Module\BaseModule $deliveryModule */
+        $deliveryModule = $deliveryModuleModel->getModuleInstance($this->container);
+
+        /**
+         * Build fake Request to inject in the module
+         */
+        $fakeRequest = new Request();
+        $fakeRequest->setSession(new FakeSession());
+        $deliveryModule->setRequest($fakeRequest);
+
+        /**
+         * Get Real request
+         */
+        /** @var Request $request */
+        $request = $this->container->get("request");
+        $currency = $request->getSession()->getCurrency();
 
         /** @var \Thelia\Model\Product $product */
         foreach($this->getData() as $product) {
@@ -104,16 +139,13 @@ class XMLExportProducts
             $node->addChild("fil-ariane", implode(" > ", $reversedBreadcrumb));
 
             /**
-             * Get VAT
-             * TODO
-             */
-            $node->addChild("tva");
-
-            /**
              * Features
              */
             $featuresNode = $node->addChild("caracteristiques");
             foreach ($product->getFeatureProducts() as $featureProduct) {
+                $featureProduct->getFeatureAv()->setLocale($this->locale);
+                $featureProduct->getFeature()->setLocale($this->locale);
+
                 $featuresNode->addChild(
                     $featureProduct->getFeature()->getTitle(),
                     $featureProduct->getFeatureAv()->getTitle()
@@ -129,6 +161,30 @@ class XMLExportProducts
 
             /** @var \Thelia\Model\ProductSaleElements $pse */
             foreach($productSaleElements as $pse) {
+                /**
+                 * Fake the cart so that module::getPostage() returns the price
+                 * for only one object
+                 */
+                $fakeCartItem = new CartItem();
+                $fakeCartItem->setProductSaleElements($pse);
+                $fakeCart = new Cart();
+                $fakeCart->addCartItem($fakeCartItem);
+                $deliveryModule->getRequest()->getSession()->setCart($fakeCart);
+
+                /**
+                 * If the object is too heavy, don't export it
+                 */
+                try {
+                    $shipping_price = $deliveryModule->getPostage($country);
+                } catch(DeliveryException $e) {
+                    continue;
+                }
+
+                $productPrice = $pse->getPricesByCurrency($currency);
+                $pse->setVirtualColumn("price_PRICE", $productPrice->getPrice());
+                $pse->setVirtualColumn("price_PROMO_PRICE", $productPrice->getPromoPrice());
+
+
                 $deliveryTimeMin = null;
                 $deliveryTimeMax = null;
 
@@ -152,15 +208,26 @@ class XMLExportProducts
                 $pseNode = $psesNode->addChild("declinaison");
                 $pseNode->addChild("id_enfant", $pse->getId());
                 /**
-                 * Get price
-                 * TODO
+                 * Get ecotax
                  */
-                //$pse_node->addChild("prix", $pse->getTaxedPrice($country));
-                $pseNode->addChild("prix-barre");
+                $pseNode->addChild(
+                    "prix",
+                    $pse->getPromo() ?
+                        $pse->getPromoPrice() :
+                        $pse->getPrice()
+                );
+
+                /** @var \Thelia\TaxEngine\TaxType\FixAmountTaxType $taxInstance */
+                $taxInstance = $tax->getTypeInstance();
+                $taxInstance->loadRequirements($tax->getRequirements());
+                $ecotax = $taxInstance->fixAmountRetriever($product);
+
+                $pseNode->addChild("prix-barre", $pse->getPromo() ? $pse->getPrice() : null);
                 $pseNode->addChild("quantite", $pse->getQuantity());
                 $pseNode->addChild("ean", $pse->getEanCode());
                 $pseNode->addChild("poids", $pse->getWeight());
-                $pseNode->addChild("ecotaxe");
+                $pseNode->addChild("ecotaxe", $ecotax);
+                $pseNode->addChild("frais-de-port",$shipping_price);
                 $pseNode->addChild("delai-livraison-mini",$deliveryTimeMin);
                 $pseNode->addChild("delai-livraison-maxi",$deliveryTimeMax);
 

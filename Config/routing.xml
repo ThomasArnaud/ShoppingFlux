@@ -27,5 +27,8 @@
     ...
     </route>
     -->
+    <route id="shoppingflux.export" path="/admin/module/ShoppingFlux/export" methods="post">
+        <default key="_controller">ShoppingFlux\Controller\SaveExportController::saveOrExport</default>
+    </route>
 
 </routes>

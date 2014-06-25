@@ -12,9 +12,11 @@
 
 namespace ShoppingFlux\Model;
 use Thelia\Model\ConfigQuery;
+use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\Tax;
 use Thelia\Module\AbstractDeliveryModule;
 
 /**
@@ -55,16 +57,13 @@ class ShoppingFluxConfigQuery
         $id = ConfigQuery::read("shopping_flux_delivery_module_id");
 
         return ModuleQuery::create()
-            ->findPk($id);
+            ->findPk($id)
+            ->getId();
     }
 
-    public static function setDeliveryModule(Module $module)
+    public static function setDeliveryModule($moduleId)
     {
-        if($module->getType() === AbstractDeliveryModule::DELIVERY_MODULE_TYPE) {
-            ConfigQuery::write("shopping_flux_delivery_module_id", $module->getId());
-        } else {
-            throw new \Exception("The module ".$module->getTitle()." is not a delivery module.");
-        }
+        ConfigQuery::write("shopping_flux_delivery_module_id", $moduleId);
     }
 
     public static function getDefaultLangId()
@@ -73,6 +72,21 @@ class ShoppingFluxConfigQuery
 
         return LangQuery::create()
             ->findPk($id);
+    }
+
+    public static function setDefaultLang($langId)
+    {
+        ConfigQuery::write("shopping_flux_lang_id", $langId);
+    }
+
+    public static function getEcotaxRuleId()
+    {
+        return ConfigQuery::read("shopping_flux_ecotax_id");
+    }
+
+    public static function setEcotaxRule($taxId)
+    {
+        ConfigQuery::write("shopping_flux_ecotax_id", $taxId);
     }
 
 

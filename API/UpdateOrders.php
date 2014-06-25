@@ -23,19 +23,13 @@ class UpdateOrders extends AbstractRequestWebService
     /**
      * @param $dataStruct
      * @param $data
-     * @return array|\DOMNode|Object|string
+     * @return UpdateOrdersResponse
      */
     public function parseResponse($dataStruct, $data)
     {
         $response = new UpdateOrdersResponse($data);
 
-        if($response->isInError()) {
-            $return = $response->getError();
-        } else {
-            $return = $response->getGroup("Orders", $dataStruct);
-        }
-
-        return $return;
+        return $response;
     }
 
 } 
