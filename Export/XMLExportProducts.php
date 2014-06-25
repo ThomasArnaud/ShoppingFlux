@@ -240,6 +240,12 @@ class XMLExportProducts
                     );
                 }
 
+                /**
+                 * Discount FROM - TO
+                 * TODO
+                 */
+                $pseNode->addChild("promo-de");
+                $pseNode->addChild("promo-a");
             }
 
         }
