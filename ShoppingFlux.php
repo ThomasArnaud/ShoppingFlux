@@ -13,10 +13,17 @@
 namespace ShoppingFlux;
 
 use Propel\Runtime\Connection\ConnectionInterface;
-use Thelia\Install\Database;
+use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Thelia\Module\BaseModule;
 
 class ShoppingFlux extends BaseModule
 {
     const MESSAGE_DOMAIN = "shoppingflux";
+
+    public function postActivation(ConnectionInterface $con = null)
+    {
+        ShoppingFluxConfigQuery::createShoppingFluxCustomer();
+    }
+
+
 }

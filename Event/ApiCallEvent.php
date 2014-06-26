@@ -11,34 +11,38 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Event;
-use ShoppingFlux\API\GetOrders;
+use ShoppingFlux\API\AbstractWebService;
+use ShoppingFlux\API\Request;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
- * Class ApiCallGetOrdersEvent
+ * Class ApiCallEvent
  * @package ShoppingFlux\Event
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ApiCallGetOrdersEvent extends Event
+class ApiCallEvent extends Event
 {
     protected $api;
 
-    public function __construct(GetOrders $api)
+    public function __construct(AbstractWebService $api)
     {
         $this->setApi($api);
 
     }
 
     /**
-     * @param GetOrders $api
+     * @param AbstractWebService $api
+     * @return $this
      */
-    public function setApi($api)
+    public function setApi(AbstractWebService $api)
     {
         $this->api = $api;
+
+        return $this;
     }
 
     /**
-     * @return GetOrders
+     * @return AbstractWebService
      */
     public function getApi()
     {

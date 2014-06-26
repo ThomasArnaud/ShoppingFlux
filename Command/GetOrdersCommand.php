@@ -12,7 +12,7 @@
 
 namespace ShoppingFlux\Command;
 use ShoppingFlux\API\GetOrders;
-use ShoppingFlux\Event\ApiCallGetOrdersEvent;
+use ShoppingFlux\Event\ApiCallEvent;
 use ShoppingFlux\Event\ShoppingFluxEvents;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Thelia\Command\ContainerAwareCommand;
@@ -59,7 +59,7 @@ class GetOrdersCommand extends ContainerAwareCommand
 
          $dispatcher->dispatch(
              ShoppingFluxEvents::GET_ORDERS_EVENT,
-             new ApiCallGetOrdersEvent($api)
+             new ApiCallEvent($api)
          );
     }
 } 

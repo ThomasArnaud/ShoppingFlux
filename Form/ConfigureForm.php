@@ -71,6 +71,7 @@ class ConfigureForm extends BaseForm
 
         $deliveryModulesId = ModuleQuery::create()
             ->filterByType(AbstractDeliveryModule::DELIVERY_MODULE_TYPE)
+            ->filterByActivate(1)
             ->select("Id")
             ->find()
             ->toArray()

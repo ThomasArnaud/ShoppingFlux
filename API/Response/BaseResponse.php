@@ -123,6 +123,20 @@ abstract class BaseResponse
         return $error;
     }
 
+    public function getFormattedError()
+    {
+        $data = $this->getError();
+        $returnString = null;
+
+        if (count($data) === 4) {
+            $returnString = "[ShoppingFlux Error ".$data["call"]."][".$data["date"]."] ";
+            $returnString .= $data["type"].": ".$data["message"];
+        }
+
+
+        return $returnString;
+    }
+
     public function getDate()
     {
         return $this->get("Date");
@@ -210,7 +224,11 @@ abstract class BaseResponse
 
     protected function getGroupAsDomNode($key)
     {
-        return $this->get($key, 0, false);
+        return is_object($node = $this->get($key, 0, false)) ?
+            $node :
+            (new \DOMDocument("1.0"))->appendChild(
+                new \DOMElement("error", "No such group \"$key\"")
+            );
     }
     /**
      * @return string

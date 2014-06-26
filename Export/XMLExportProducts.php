@@ -139,13 +139,23 @@ class XMLExportProducts
              */
             $featuresNode = $node->addChild("caracteristiques");
             foreach ($product->getFeatureProducts() as $featureProduct) {
-                $featureProduct->getFeatureAv()->setLocale($this->locale);
-                $featureProduct->getFeature()->setLocale($this->locale);
+                if ($featureProduct->getFeatureAv() !== null &&
+                    $featureProduct->getFeature() !== null
+                ) {
+                    $featureProduct->getFeatureAv()->setLocale($this->locale);
+                    $featureProduct->getFeature()->setLocale($this->locale);
 
-                $featuresNode->addChild(
-                    $featureProduct->getFeature()->getTitle(),
-                    $featureProduct->getFeatureAv()->getTitle()
-                );
+                    $caracNode = $featuresNode->addChild("caracteristique");
+
+                    $caracNode->addAttribute(
+                        "type",
+                        $featureProduct->getFeature()->getTitle()
+                    );
+                    $caracNode->addAttribute(
+                        "value",
+                        $featureProduct->getFeatureAv()->getTitle()
+                    );
+                }
             }
 
             /**
@@ -230,10 +240,20 @@ class XMLExportProducts
                 $pseAttrNode = $pseNode->addChild("attributs");
                 /** @var \Thelia\Model\AttributeCombination $attr */
                 foreach($pse->getAttributeCombinations() as $attr) {
-                    $pseAttrNode->addChild(
-                        $attr->getAttribute()->getTitle(),
-                        $attr->getAttributeAv()->getTitle()
-                    );
+                    if($attr->getAttribute() !== null && $attr->getAttributeAv() !== null) {
+                        $attr->getAttribute()->setLocale($this->locale);
+                        $attr->getAttributeAv()->setLocale($this->locale);
+
+                        $attrNode = $pseAttrNode->addChild("attribut");
+                        $attrNode->addAttribute(
+                            "type",
+                            $attr->getAttribute()->getTitle()
+                        );
+                        $attrNode->addAttribute(
+                            "value",
+                            $attr->getAttributeAv()->getTitle()
+                        );
+                    }
                 }
 
                 $pseNode->addChild("promo-de");
@@ -245,6 +265,7 @@ class XMLExportProducts
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
         $dom->loadXML($this->xml->asXML());
+
         return $dom->saveXML();
     }
 
