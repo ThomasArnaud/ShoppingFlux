@@ -32,4 +32,4 @@ class ValidOrders extends AbstractRequestWebService
         return $response;
     }
 
-} 
+}

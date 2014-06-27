@@ -13,7 +13,6 @@
 namespace ShoppingFlux\API;
 use ShoppingFlux\API\Exception\InvalidRequestException;
 use ShoppingFlux\API\Exception\MissingFileException;
-use ShoppingFlux\API\Response\BaseResponse;
 
 /**
  * Class AbstractRequestWebService
@@ -54,16 +53,36 @@ abstract class AbstractRequestWebService extends AbstractWebService
         $this->validationSchema = file_get_contents($file);
     }
 
+    public function compareResponseRequest()
+    {
+        $requestOrders = $this->request->getOrders();
 
+        $responseOrders = $this->response->getGroup("Orders");
 
+        $responseOrders = $responseOrders["Order"];
+        /**
+         * Format the array
+         */
+        if (array_key_exists("IdOrder", $responseOrders)) {
+            $responseOrders = [$responseOrders];
+        }
+
+        foreach ($responseOrders as &$responseOrder) {
+            $status = $responseOrder["StatusUpdated"];
+            unset($responseOrder["StatusUpdated"]);
+            $responseOrder["Status"] = $status === "True" ? "Sent" : "Canceled";
+        }
+
+        return $requestOrders == $responseOrders;
+    }
 
     protected function call()
     {
-        if($this->request === null || !$this->request->isValid($this->validationSchema)) {
+        if ($this->request === null || !$this->request->isValid($this->validationSchema)) {
             throw new InvalidRequestException("The request is not valid");
         }
 
-        $this->addPostData('REQUEST', $this->request);
+        $this->addPostData('REQUEST',(string) $this->request);
 
         parent::call();
     }
@@ -75,7 +94,7 @@ abstract class AbstractRequestWebService extends AbstractWebService
 
     public function setRequest(Request $request)
     {
-        $this->request = (string)$request;
+        $this->request = $request;
 
         return $this;
     }
@@ -91,5 +110,4 @@ abstract class AbstractRequestWebService extends AbstractWebService
         return $this->getFunctionName();
     }
 
-
-} 
+}

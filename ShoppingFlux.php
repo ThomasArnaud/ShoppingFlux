@@ -22,8 +22,15 @@ class ShoppingFlux extends BaseModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
+        /**
+         * Create a fake customer for shopping flux orders
+         */
         ShoppingFluxConfigQuery::createShoppingFluxCustomer();
-    }
 
+        /**
+         * Create a fake payment module for shopping flux orders
+         */
+        ShoppingFluxConfigQuery::createFakePaymentModule();
+    }
 
 }

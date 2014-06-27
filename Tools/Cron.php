@@ -17,7 +17,7 @@ namespace ShoppingFlux\Tools;
  * @package ShoppingFlux\Tools
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class Cron 
+class Cron
 {
     public static function isCronAvailable()
     {

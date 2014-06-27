@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\API;
-use ShoppingFlux\API\Resource\MarketPlace;
 
 /**
  * Class Request
@@ -30,7 +29,6 @@ class Request
      */
     protected $errorMessage = null;
 
-
     public function __construct($rootName)
     {
         $rootName = htmlentities($rootName);
@@ -44,7 +42,7 @@ class Request
         $tag = $this->xml->firstChild;
         $order = $tag->appendChild(new \DOMElement("Order"));
 
-        foreach($data as $title=>$value) {
+        foreach ($data as $title => $value) {
             $newNode = new \DOMElement($title, $value);
             $order->appendChild($newNode);
         }
@@ -56,11 +54,30 @@ class Request
         try {
             $this->xml->schemaValidateSource($XSDString);
             $ok = true;
-        } catch(\ErrorException $e) {
+        } catch (\ErrorException $e) {
             $this->errorMessage = $e->getMessage();
         }
 
         return $ok;
+    }
+
+    public function getOrders()
+    {
+        $orders = [];
+        $ordersNode = $this->xml->getElementsByTagName("Order");
+
+        for ($i = 0; $i < $ordersNode->length; ++$i) {
+            $orderNode = $ordersNode->item($i);
+
+            $children = $orderNode->childNodes;
+
+            $order = &$orders[];
+            for ($j = 0; $j < $children->length; ++$j) {
+                $order[$children->item($j)->nodeName] = $children->item($j)->nodeValue;
+            }
+        }
+
+        return $orders;
     }
 
     public function getErrorMessage()
@@ -68,7 +85,8 @@ class Request
         return $this->errorMessage;
     }
 
-    public function __toString() {
+    public function __toString()
+    {
         return $this->xml->C14N();
     }
-} 
+}

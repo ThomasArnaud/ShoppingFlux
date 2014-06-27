@@ -38,8 +38,8 @@ class GetOrdersCommand extends ContainerAwareCommand
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
+     * @param  InputInterface  $input
+     * @param  OutputInterface $output
      * @return void
      *
      * Create a new
@@ -62,4 +62,4 @@ class GetOrdersCommand extends ContainerAwareCommand
              new ApiCallEvent($api)
          );
     }
-} 
+}

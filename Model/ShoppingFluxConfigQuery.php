@@ -11,26 +11,22 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Model;
-use Thelia\Core\Event\Customer\CustomerCreateOrUpdateEvent;
-use Thelia\Core\Event\Customer\CustomerEvent;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
-use Thelia\Model\CustomerTitle;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
-use Thelia\Model\Tax;
-use Thelia\Module\AbstractDeliveryModule;
+use Thelia\Module\BaseModule;
 
 /**
  * Class ShoppingFluxConfigQuery
  * @package ShoppingFlux\Model
  * @author Benjamin Perche <bperche@openstudio.fr>
  */
-class ShoppingFluxConfigQuery 
+class ShoppingFluxConfigQuery
 {
     /**
      * @return mixed
@@ -57,13 +53,13 @@ class ShoppingFluxConfigQuery
         ConfigQuery::write("shopping_flux_prod", $value);
     }
 
-
     public static function getDeliveryModuleId()
     {
         $id = ConfigQuery::read("shopping_flux_delivery_module_id");
 
         $module = ModuleQuery::create()
             ->findPk($id);
+
         return $module === null ? 0 : $module->getId();
     }
 
@@ -78,6 +74,7 @@ class ShoppingFluxConfigQuery
 
         $lang = LangQuery::create()
             ->findPk($id);
+
         return $lang === null ? 0 : $lang;
     }
 
@@ -99,7 +96,7 @@ class ShoppingFluxConfigQuery
     /**
      * @return Customer
      */
-    public static function  createShoppingFluxCustomer()
+    public static function createShoppingFluxCustomer()
     {
         $shoppingFluxCustomer = CustomerQuery::create()
             ->findOneByRef("ShoppingFlux");
@@ -119,4 +116,20 @@ class ShoppingFluxConfigQuery
         return $shoppingFluxCustomer;
     }
 
-} 
+    public static function createFakePaymentModule()
+    {
+        $shoppingFluxPaymentModule = ModuleQuery::create()
+            ->findOneByCode("ShoppingFluxPayment");
+
+        if (null === $shoppingFluxPaymentModule) {
+            $shoppingFluxPaymentModule = new Module();
+
+            $shoppingFluxPaymentModule
+                ->setCode("ShoppingFluxPayment")
+                ->setType(BaseModule::PAYMENT_MODULE_TYPE)
+                ->save();
+        }
+
+        return $shoppingFluxPaymentModule;
+    }
+}

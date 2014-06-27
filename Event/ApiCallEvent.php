@@ -12,7 +12,6 @@
 
 namespace ShoppingFlux\Event;
 use ShoppingFlux\API\AbstractWebService;
-use ShoppingFlux\API\Request;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -31,7 +30,7 @@ class ApiCallEvent extends Event
     }
 
     /**
-     * @param AbstractWebService $api
+     * @param  AbstractWebService $api
      * @return $this
      */
     public function setApi(AbstractWebService $api)
@@ -49,5 +48,4 @@ class ApiCallEvent extends Event
         return $this->api;
     }
 
-
-} 
+}

@@ -14,12 +14,16 @@
   <xs:element name="Result" type="ResultType"/>
   <xs:complexType name="ResponseType">
     <xs:sequence>
-      <xs:element type="OrdersType" name="Orders" />
+      <xs:element type="OrdersType" name="Orders">
+        <xs:annotation>
+          <xs:documentation>more Order node here</xs:documentation>
+        </xs:annotation>
+      </xs:element>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="OrderType">
     <xs:sequence>
-      <xs:element name="IdOrder" />
+      <xs:element name="IdOrder"/>
       <xs:element name="Marketplace">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -33,14 +37,7 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:element>
-      <xs:element name="Imported">
-        <xs:simpleType>
-          <xs:restriction base="xs:string">
-            <xs:enumeration value="True"/>
-            <xs:enumeration value="False"/>
-          </xs:restriction>
-        </xs:simpleType>
-      </xs:element>
+      <xs:element type="xs:string" name="StatusUpdated"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="OrdersType">
@@ -48,7 +45,7 @@
       <xs:element type="OrderType" name="Order" maxOccurs="unbounded" minOccurs="1"/>
     </xs:sequence>
   </xs:complexType>
-  <xs:complexType name="RequestType" mixed="true">
+  <xs:complexType name="RequestType">
     <xs:sequence>
       <xs:element type="xs:string" name="Date"/>
       <xs:element type="xs:string" name="Call"/>

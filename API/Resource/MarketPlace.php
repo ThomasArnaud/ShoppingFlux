@@ -25,4 +25,4 @@ class MarketPlace
     const RUE_DU_COMMERCE = "RueDuCommerce";
     const PRICE_MINISTER = "PriceMinister";
     const CDISCOUNT = "CDiscount";
-} 
+}

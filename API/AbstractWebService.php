@@ -13,7 +13,6 @@
 namespace ShoppingFlux\API;
 use ShoppingFlux\API\Exception\InvalidModeException;
 use ShoppingFlux\API\Exception\MissingTokenException;
-use ShoppingFlux\API\Request;
 use ShoppingFlux\API\Response\BaseResponse;
 
 /**
@@ -59,12 +58,12 @@ abstract class AbstractWebService
     protected $response = null;
 
     /**
-     * @param null $token
+     * @param null   $token
      * @param string $mode
      */
     public function __construct($token = null, $mode = self::REQUEST_MODE_SANDBOX)
     {
-        if($mode !== self::REQUEST_MODE_SANDBOX && $mode !== self::REQUEST_MODE_PRODUCTION) {
+        if ($mode !== self::REQUEST_MODE_SANDBOX && $mode !== self::REQUEST_MODE_PRODUCTION) {
             throw new InvalidModeException(
                 "The mode must be Sandbox or Production"
             );
@@ -83,12 +82,12 @@ abstract class AbstractWebService
     }
 
     /**
-     * @param bool $forceCall
+     * @param  bool         $forceCall
      * @return BaseResponse
      */
     public function getResponse($dataStruct = BaseResponse::GROUP_STRUCT_ARRAY, $forceCall = false)
     {
-        if($this->response === null || @(bool)$forceCall ) {
+        if ($this->response === null || @(bool) $forceCall ) {
             $data = $this->call();
             $this->response = $this->parseResponse($dataStruct, $data);
         }
@@ -119,7 +118,7 @@ abstract class AbstractWebService
 
     protected function call()
     {
-        if(!is_string($this->token) || empty($this->token)) {
+        if (!is_string($this->token) || empty($this->token)) {
             throw new MissingTokenException("You can't send a request without a token");
         }
 
@@ -148,14 +147,15 @@ abstract class AbstractWebService
      *
      * The name of the function, by default, the same as the class'
      */
-    function getFunctionName()
+    public function getFunctionName()
     {
         $className = get_class($this);
         $className = explode("\\", $className);
 
         end($className);
+
         return current($className);
     }
 
     abstract protected function parseResponse($dataStruct, $data);
-} 
+}

@@ -12,9 +12,7 @@
 
 namespace ShoppingFlux\Export;
 use Thelia\Core\HttpFoundation\Session\Session;
-use Thelia\Exception\InvalidCartException;
 use Thelia\Model\Cart;
-use Thelia\Model\CartQuery;
 
 /**
  * Class FakeSession
@@ -29,7 +27,7 @@ class FakeSession extends Session
     protected $cart;
 
     /**
-     * @param Cart $cart
+     * @param  Cart  $cart
      * @return $this
      */
     public function setCart($cart)
@@ -44,5 +42,4 @@ class FakeSession extends Session
         return $this->cart;
     }
 
-
-} 
+}

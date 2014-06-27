@@ -13,6 +13,7 @@
 namespace ShoppingFlux\Tests\API;
 use ShoppingFlux\API\Request;
 use ShoppingFlux\API\Resource\MarketPlace;
+use ShoppingFlux\API\Response\UpdateOrdersResponse;
 use ShoppingFlux\API\UpdateOrders;
 
 /**
@@ -38,7 +39,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->webservice->setRequest($this->request);
 
-
     }
 
     /**
@@ -58,7 +58,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         $this->request
             ->addOrder([
                 "IdOrder" => "12345",
-                "Marketplace" => MarketPlace::AMAZON,
+                "Marketplace" => "Amazon",
                 "Status" => "Canceled",
             ]);
 
@@ -80,7 +80,71 @@ class RequestTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals(
             "<UpdateOrders><Order><IdOrder>12345</IdOrder><Marketplace>Amazon</Marketplace><Status>Canceled</Status></Order></UpdateOrders>",
-            (string)$this->request
+            (string) $this->request
         );
     }
-} 
+
+    public function testRequestGetOrders()
+    {
+        $this->request
+            ->addOrder([
+                "IdOrder" => "12345",
+                "Marketplace" => "Amazon",
+                "Status" => "Canceled",
+            ]);
+
+        $this->assertEquals(
+            [["IdOrder"=>"12345", "Marketplace" => "Amazon","Status" => "Canceled"]],
+            $this->request->getOrders()
+        );
+    }
+
+    public function testCompareResponseRequestOrders()
+    {
+        $this->request
+            ->addOrder([
+                "IdOrder" => "12345",
+                "Marketplace" => "Amazon",
+                "Status" => "Canceled",
+            ]);
+         $this->request->addOrder([
+             "IdOrder" => "12346",
+             "Marketplace" => "eBay",
+             "Status" => "Sent",
+            ]);
+
+        $api = new UpdateOrders("foo");
+
+        $rawData = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<Result>
+    <Request>
+        <Date>2011-08-09T19:36:54+02:00</Date>
+        <Call>UpdateOrders</Call>
+        <Token>foo</Token>
+        <Mode>Sandbox</Mode>
+    </Request>
+    <Response>
+        <Orders>
+            <Order>
+                <IdOrder>12345</IdOrder>
+                <Marketplace>Amazon</Marketplace>
+                <StatusUpdated>False</StatusUpdated>
+            </Order>
+            <Order>
+                <IdOrder>12346</IdOrder>
+                <Marketplace>eBay</Marketplace>
+                <StatusUpdated>True</StatusUpdated>
+            </Order>
+        </Orders>
+    </Response>
+</Result>
+XML;
+
+        $response = new UpdateOrdersResponse($rawData);
+
+        $api->setResponse($response)->setRequest($this->request);
+
+        $this->assertTrue($api->compareResponseRequest());
+    }
+}

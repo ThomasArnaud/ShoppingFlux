@@ -20,4 +20,4 @@ namespace ShoppingFlux\API\Exception;
 class InvalidRequestException extends \Exception
 {
 
-} 
+}

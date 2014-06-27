@@ -25,4 +25,4 @@ class EscapeSimpleXMLElement extends \SimpleXMLElement
         return parent::addChild(htmlspecialchars($name), htmlspecialchars($value), $namespace);
     }
 
-} 
+}

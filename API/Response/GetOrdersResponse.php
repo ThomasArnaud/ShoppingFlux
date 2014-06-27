@@ -20,4 +20,4 @@ namespace ShoppingFlux\API\Response;
 class GetOrdersResponse extends BaseResponse
 {
 
-} 
+}

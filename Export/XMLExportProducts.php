@@ -21,6 +21,8 @@ use Thelia\Model\CountryQuery;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\TaxQuery;
+use Thelia\Model\TaxRuleCountry;
+use Thelia\Model\TaxRuleCountryQuery;
 use Thelia\Module\Exception\DeliveryException;
 use Thelia\TaxEngine\TaxEngine;
 use Thelia\Tools\URL;
@@ -90,12 +92,15 @@ class XMLExportProducts
         $currency = $request->getSession()->getCurrency();
 
         /** @var \Thelia\Model\Product $product */
-        foreach($this->getData() as $product) {
+        foreach ($this->getData() as $product) {
             $product->setLocale($this->locale);
 
             $node = $this->xml->addChild("produit");
 
-            $node->addChild("id_parent", $product->getId());
+            /**
+             * Parent id
+             */
+            $node->addChild("id", $product->getId());
             $node->addChild("nom", $product->getTitle());
             $node->addChild(
                 "url",
@@ -127,7 +132,7 @@ class XMLExportProducts
 
             do {
                 $breadcrumb[] = $category->getTitle();
-            } while(null !== $category = CategoryQuery::create()->findPk($category->getParent()));
+            } while (null !== $category = CategoryQuery::create()->findPk($category->getParent()));
 
             $reversedBreadcrumb = array_reverse($breadcrumb);
 
@@ -145,17 +150,39 @@ class XMLExportProducts
                     $featureProduct->getFeatureAv()->setLocale($this->locale);
                     $featureProduct->getFeature()->setLocale($this->locale);
 
-                    $caracNode = $featuresNode->addChild("caracteristique");
-
-                    $caracNode->addAttribute(
-                        "type",
-                        $featureProduct->getFeature()->getTitle()
-                    );
-                    $caracNode->addAttribute(
-                        "value",
+                    $featuresNode->addChild(
+                        trim(
+                            preg_replace(
+                                "#[^a-z0-9_\-]#i",
+                                "_",
+                                $featureProduct->getFeature()->getTitle()
+                            ),
+                            "_"
+                        ),
                         $featureProduct->getFeatureAv()->getTitle()
                     );
                 }
+            }
+
+            /**
+             * Compute VAT
+             */
+            $taxRuleCountry = TaxRuleCountryQuery::create()
+                ->filterByTaxRule($product->getTaxRule())
+                ->filterByCountry($country)
+                ->findOne();
+
+            $tax = $taxRuleCountry->getTax();
+
+            /** @var \Thelia\TaxEngine\TaxType\PricePercentTaxType $taxType*/
+            $taxType = $tax->getTypeInstance();
+
+            $taxType->loadRequirements(
+                $tax->getRequirements()
+            );
+
+            if (array_key_exists("percent", $taxRequirements = $taxType->getRequirements())) {
+                $node->addChild("tva", $taxRequirements["percent"]);
             }
 
             /**
@@ -166,7 +193,7 @@ class XMLExportProducts
             $psesNode = $node->addChild("declinaisons");
 
             /** @var \Thelia\Model\ProductSaleElements $pse */
-            foreach($productSaleElements as $pse) {
+            foreach ($productSaleElements as $pse) {
                 /**
                  * Fake the cart so that module::getPostage() returns the price
                  * for only one object
@@ -182,7 +209,7 @@ class XMLExportProducts
                  */
                 try {
                     $shipping_price = $deliveryModule->getPostage($country);
-                } catch(DeliveryException $e) {
+                } catch (DeliveryException $e) {
                     continue;
                 }
 
@@ -190,14 +217,13 @@ class XMLExportProducts
                 $pse->setVirtualColumn("price_PRICE", $productPrice->getPrice());
                 $pse->setVirtualColumn("price_PROMO_PRICE", $productPrice->getPromoPrice());
 
-
                 $deliveryTimeMin = null;
                 $deliveryTimeMax = null;
 
                 /**
                  * Handle the delivery time if the module exists
                  */
-                if($deliveryDateModuleExists) {
+                if ($deliveryDateModuleExists) {
                     $deliveryDate = \DeliveryDate\Model\ProductDateQuery::create()
                         ->findPk($pse->getId());
 
@@ -212,12 +238,17 @@ class XMLExportProducts
                 }
 
                 $pseNode = $psesNode->addChild("declinaison");
-                $pseNode->addChild("id_enfant", $pse->getId());
+
+                /**
+                 * Child id
+                 */
+                $pseNode->addChild("id", $product->getId()."_".$pse->getId());
+
                 /**
                  * Get ecotax
                  */
                 $pseNode->addChild(
-                    "prix",
+                    "prix-ttc",
                     $pse->getPromo() ?
                         $pse->getPromoPrice() :
                         $pse->getPrice()
@@ -228,7 +259,7 @@ class XMLExportProducts
                 $taxInstance->loadRequirements($tax->getRequirements());
                 $ecotax = $taxInstance->fixAmountRetriever($product);
 
-                $pseNode->addChild("prix-barre", $pse->getPromo() ? $pse->getPrice() : null);
+                $pseNode->addChild("prix-ttc-barre", $pse->getPromo() ? $pse->getPrice() : null);
                 $pseNode->addChild("quantite", $pse->getQuantity());
                 $pseNode->addChild("ean", $pse->getEanCode());
                 $pseNode->addChild("poids", $pse->getWeight());
@@ -238,19 +269,22 @@ class XMLExportProducts
                 $pseNode->addChild("delai-livraison-maxi",$deliveryTimeMax);
 
                 $pseAttrNode = $pseNode->addChild("attributs");
+
                 /** @var \Thelia\Model\AttributeCombination $attr */
-                foreach($pse->getAttributeCombinations() as $attr) {
-                    if($attr->getAttribute() !== null && $attr->getAttributeAv() !== null) {
+                foreach ($pse->getAttributeCombinations() as $attr) {
+                    if ($attr->getAttribute() !== null && $attr->getAttributeAv() !== null) {
                         $attr->getAttribute()->setLocale($this->locale);
                         $attr->getAttributeAv()->setLocale($this->locale);
 
-                        $attrNode = $pseAttrNode->addChild("attribut");
-                        $attrNode->addAttribute(
-                            "type",
-                            $attr->getAttribute()->getTitle()
-                        );
-                        $attrNode->addAttribute(
-                            "value",
+                        $pseAttrNode->addChild(
+                            trim(
+                                preg_replace(
+                                    "#[^a-z0-9_\-]#i",
+                                    "_",
+                                    $attr->getAttribute()->getTitle()
+                                ),
+                                "_"
+                            ),
                             $attr->getAttributeAv()->getTitle()
                         );
                     }
@@ -259,8 +293,11 @@ class XMLExportProducts
                 $pseNode->addChild("promo-de");
                 $pseNode->addChild("promo-a");
             }
-
         }
+
+        /**
+         * Then return a well formed string
+         */
         $dom = new \DOMDocument("1.0");
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = true;
@@ -269,11 +306,11 @@ class XMLExportProducts
         return $dom->saveXML();
     }
 
-
     protected function getData()
     {
         $query = ProductQuery::create();
 
         return $query->find();
+
     }
-} 
+}

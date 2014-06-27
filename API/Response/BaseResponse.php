@@ -13,7 +13,6 @@
 namespace ShoppingFlux\API\Response;
 use ShoppingFlux\API\Exception\BadResponseException;
 
-
 /**
  * Class BaseResponse
  * @package ShoppingFlux\API\Response
@@ -79,18 +78,18 @@ abstract class BaseResponse
         try {
             $xml = new \DOMDocument("1.0");
 
-            if(!$xml->loadXML($rawData)) {
+            if (!$xml->loadXML($rawData)) {
                 throw new \Exception();
             }
 
             try {
                 $xml->schemaValidate($this->resourceFolder . $this->getXSDFileName() . ".xsd");
-            } catch(\Exception $e) {
+            } catch (\Exception $e) {
                 $xml->schemaValidate($this->resourceFolder . "ErrorResponse.xsd");
                 $this->hasError = true;
             }
 
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             throw new BadResponseException(
                 "The response is not a valid Shopping Flux response"
             );
@@ -132,7 +131,6 @@ abstract class BaseResponse
             $returnString = "[ShoppingFlux Error ".$data["call"]."][".$data["date"]."] ";
             $returnString .= $data["type"].": ".$data["message"];
         }
-
 
         return $returnString;
     }
@@ -176,13 +174,13 @@ abstract class BaseResponse
 
     /**
      * @param $key
-     * @param string $as
+     * @param  string                       $as
      * @return \DOMNode|array|Object|string
      * @throws \Exception
      */
     public function getGroup($key, $as = self::GROUP_STRUCT_ARRAY)
     {
-        switch($as) {
+        switch ($as) {
             case self::GROUP_STRUCT_ARRAY:
                 return $this->getGroupAsArray($key);
 
@@ -243,6 +241,7 @@ abstract class BaseResponse
         $className = explode("\\", $className);
 
         end($className);
+
         return current($className);
     }
-} 
+}

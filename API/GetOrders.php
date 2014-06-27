@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\API;
-use ShoppingFlux\API\Response\BaseResponse;
 use ShoppingFlux\API\Response\GetOrdersResponse;
 
 /**
@@ -32,4 +31,4 @@ class GetOrders extends AbstractWebService
 
         return $response;
     }
-} 
+}

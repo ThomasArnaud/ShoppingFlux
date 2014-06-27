@@ -18,6 +18,8 @@ use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Form\Form;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Response;
+use Thelia\Core\Security\AccessManager;
+use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Model\LangQuery;
@@ -31,9 +33,12 @@ class SaveExportController extends BaseAdminController
 {
     public function saveOrExport()
     {
+        if (null !== $response = $this->checkAuth([AdminResources::MODULE], ["ShoppingFlux"], AccessManager::UPDATE)) {
+            return $response;
+        }
+
         $form = new ConfigureForm($this->getRequest());
         $errorMessage = null;
-
 
         try {
             $boundForm = $this->validateForm($form, "post");
@@ -61,13 +66,13 @@ class SaveExportController extends BaseAdminController
             if ($action === "export") {
                 return $this->export($boundForm);
             }
-        } catch(FormValidationException $e) {
+        } catch (FormValidationException $e) {
             $errorMessage = $this->createStandardFormValidationErrorMessage($e);
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
         }
 
-        if(null !== $errorMessage) {
+        if (null !== $errorMessage) {
             $form->setErrorMessage($errorMessage);
 
             $this->getParserContext()
@@ -104,7 +109,7 @@ class SaveExportController extends BaseAdminController
             ShoppingFluxConfigQuery::setEcotaxRule(
                 $form->get("ecotax_id")->getData()
             );
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             return "An error occured during the recording of the values (".$e->getMessage().")";
         }
 
@@ -125,4 +130,4 @@ class SaveExportController extends BaseAdminController
             ]
         );
     }
-} 
+}

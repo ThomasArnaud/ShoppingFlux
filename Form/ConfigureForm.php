@@ -58,7 +58,7 @@ class ConfigureForm extends BaseForm
             ->findOneByCode($this->getRequest()->getPreferredLanguage())
         ;
 
-        if($lang === null) {
+        if ($lang === null) {
             throw new \ErrorException("The locale ".$this->getRequest()->getPreferredLanguage()." doesn't exist");
         }
 
@@ -145,4 +145,4 @@ class ConfigureForm extends BaseForm
         return "configure_shopping_flux_form";
     }
 
-} 
+}

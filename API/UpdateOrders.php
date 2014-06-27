@@ -32,4 +32,4 @@ class UpdateOrders extends AbstractRequestWebService
         return $response;
     }
 
-} 
+}

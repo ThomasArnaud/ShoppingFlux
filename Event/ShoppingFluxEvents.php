@@ -22,4 +22,4 @@ abstract class ShoppingFluxEvents
     const GET_ORDERS_EVENT = "shoppingflux.get.orders";
     const VALID_ORDERS_EVENT = "shoppingflux.valid.orders";
     const UPDATE_ORDERS_EVENT = "shoppingflux.update.orders";
-} 
+}

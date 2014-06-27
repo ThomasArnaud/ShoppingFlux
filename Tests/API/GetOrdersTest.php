@@ -26,7 +26,6 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
      */
     protected $webservice;
 
-
     public function setUp()
     {
         $this->webservice = new GetOrders("TOKEN", GetOrders::REQUEST_MODE_SANDBOX);
@@ -186,4 +185,3 @@ XML;
     }
 
 }
- 
