@@ -2,6 +2,12 @@
     <div class="row">
         <div class="col-md-12 title title-without-tabs">
             {intl l="Export your catalog" d="shoppingflux.ai"}
+
+            <a href="{url path='/admin/module/ShoppingFlux/GetOrders'}">
+                <button class="btn btn-default btn-info pull-right">
+                    {intl l="Get orders" d="shoppingflux.ai"}
+                </button>
+            </a>
         </div>
     </div>
     {form name="shoppingflux.configure"}
@@ -12,6 +18,12 @@
                     {$form_error_message}
                 </div>
             </div>
+        </div>
+    {/if}
+
+    {if $error_message}
+        <div class="alert alert-danger">
+            {$error_message}
         </div>
     {/if}
 

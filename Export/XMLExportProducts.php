@@ -177,10 +177,6 @@ class XMLExportProducts
             /** @var \Thelia\TaxEngine\TaxType\PricePercentTaxType $taxType*/
             $taxType = $tax->getTypeInstance();
 
-            $taxType->loadRequirements(
-                $tax->getRequirements()
-            );
-
             if (array_key_exists("percent", $taxRequirements = $taxType->getRequirements())) {
                 $node->addChild("tva", $taxRequirements["percent"]);
             }
@@ -256,7 +252,6 @@ class XMLExportProducts
 
                 /** @var \Thelia\TaxEngine\TaxType\FixAmountTaxType $taxInstance */
                 $taxInstance = $tax->getTypeInstance();
-                $taxInstance->loadRequirements($tax->getRequirements());
                 $ecotax = $taxInstance->fixAmountRetriever($product);
 
                 $pseNode->addChild("prix-ttc-barre", $pse->getPromo() ? $pse->getPrice() : null);

@@ -14,6 +14,7 @@ namespace ShoppingFlux\EventListeners;
 use ShoppingFlux\API\Exception\BadResponseException;
 use ShoppingFlux\API\Request;
 use ShoppingFlux\API\UpdateOrders;
+use ShoppingFlux\API\ValidOrders;
 use ShoppingFlux\Event\ApiCallEvent;
 use ShoppingFlux\Event\ShoppingFluxEvents;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
@@ -89,11 +90,13 @@ class ApiCall implements EventSubscriberInterface
 
         if ($response->isInError()) {
             $this->logger->error($response->getFormattedError());
-            throw new BadResponseException($response->getError());
+            throw new BadResponseException($response->getFormattedError());
         }
 
         $dispatcher = $event->getDispatcher();
         $orders = $response->getGroup("Orders");
+
+        $validOrders = [];
 
         /** @var \Thelia\Model\Country $country */
         $shopCountry = CountryQuery::create()
@@ -281,7 +284,48 @@ class ApiCall implements EventSubscriberInterface
 
             $dispatcher->dispatch(TheliaEvents::ORDER_CREATE_MANUAL, $orderEvent);
 
-            $orderEvent->getPlacedOrder()->setPaid();
+            $placedOrder = $orderEvent->getPlacedOrder();
+            $placedOrder->setPaid();
+
+            $validOrders []= [
+                "IdOrder" => $placedOrder->getRef(),
+                "Marketplace" => $placedOrder->getTransactionRef()
+            ];
+        }
+
+        /**
+         * IV) Valid the orders to Shopping Flux
+         */
+
+        $request = new Request("ValidOrders");
+
+        foreach($validOrders as $validOrder) {
+            $request->addOrder($validOrder);
+        }
+
+        $validOrdersApi = new ValidOrders(
+            $response->getToken(),
+            $response->getMode()
+        );
+
+        $validOrdersApi->setRequest($request);
+
+        $validOrdersResponse = $validOrdersApi->getResponse();
+
+        if ($validOrdersResponse->isInError()) {
+            $this->logger
+                ->error($response->getFormattedError())
+            ;
+        }
+
+        if (!$validOrdersApi->compareResponseRequest()) {
+            $errorMessage = "Bad response from ShoppingFlux: ".
+                $response->getGroup("ValidOrders")
+                    ->C14N()
+            ;
+
+            $this->logger
+                ->error($errorMessage);
         }
     }
 
@@ -336,11 +380,6 @@ class ApiCall implements EventSubscriberInterface
         }
     }
 
-    public function processValidOrders()
-    {
-
-    }
-
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *
@@ -366,7 +405,6 @@ class ApiCall implements EventSubscriberInterface
         return array(
             ShoppingFluxEvents::GET_ORDERS_EVENT => array("processGetOrders", 128),
             TheliaEvents::ORDER_UPDATE_STATUS => array("processUpdateOrders", 128),
-            ShoppingFluxEvents::VALID_ORDERS_EVENT => array("processValidOrders", 128),
         );
     }
 
