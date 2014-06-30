@@ -59,7 +59,7 @@ class ConfigureForm extends BaseForm
         ;
 
         if ($lang === null) {
-            throw new \ErrorException("The locale ".$this->getRequest()->getPreferredLanguage()." doesn't exist");
+            throw new \ErrorException("The locale ".$this->getRequest()->getLocale()." doesn't exist");
         }
 
         $langsId = LangQuery::create()
