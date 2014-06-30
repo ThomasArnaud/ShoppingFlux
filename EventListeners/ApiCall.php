@@ -259,7 +259,7 @@ class ApiCall implements EventSubscriberInterface
             $order = OrderQuery::create()
                 ->findOneByRef($orderArray["IdOrder"]);
 
-            if($order !== null) {
+            if ($order !== null) {
                 $order->delete();
             }
 
@@ -312,7 +312,7 @@ class ApiCall implements EventSubscriberInterface
 
         $request = new Request("ValidOrders");
 
-        foreach($validOrders as $validOrder) {
+        foreach ($validOrders as $validOrder) {
             $request->addOrder($validOrder);
         }
 

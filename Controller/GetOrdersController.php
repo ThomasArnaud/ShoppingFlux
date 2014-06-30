@@ -47,7 +47,7 @@ class GetOrdersController extends BaseAdminController
                         "Orders successfully integrated", [], ShoppingFlux::MESSAGE_DOMAIN
                     )
                 );
-        } catch(BadResponseException $e) {
+        } catch (BadResponseException $e) {
             $this->getParserContext()
                 ->set("error_message", $e->getMessage());
         }
@@ -57,4 +57,4 @@ class GetOrdersController extends BaseAdminController
             ["module_code"   => "ShoppingFlux"]
         );
     }
-} 
+}
