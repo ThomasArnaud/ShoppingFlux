@@ -55,7 +55,7 @@ class ConfigureForm extends BaseForm
          * Get information
          */
         $lang = LangQuery::create()
-            ->findOneByCode($this->getRequest()->getPreferredLanguage())
+            ->findOneByLocale($this->getRequest()->getLocale())
         ;
 
         if ($lang === null) {
