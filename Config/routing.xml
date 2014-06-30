@@ -34,7 +34,4 @@
     <route id="shoppingflux.getorders" path="/admin/module/ShoppingFlux/GetOrders">
         <default key="_controller">ShoppingFlux\Controller\GetOrdersController::getOrders</default>
     </route>
-    <route id="try" path="/admin/module/ShoppingFlux/try">
-        <default key="_controller">ShoppingFlux\Controller\TryImport::test</default>
-    </route>
 </routes>
