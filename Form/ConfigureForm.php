@@ -16,6 +16,7 @@ use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
+use Thelia\Model\CountryQuery;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
@@ -54,12 +55,17 @@ class ConfigureForm extends BaseForm
         /**
          * Get information
          */
+        $locale = CountryQuery::create()
+            ->findOneByShopCountry(true)
+            ->getLocale()
+        ;
+
         $lang = LangQuery::create()
-            ->findOneByLocale($this->getRequest()->getLocale())
+            ->findOneByLocale($locale)
         ;
 
         if ($lang === null) {
-            throw new \ErrorException("The locale ".$this->getRequest()->getLocale()." doesn't exist");
+            throw new \ErrorException("The locale ".$locale." doesn't exist");
         }
 
         $langsId = LangQuery::create()
