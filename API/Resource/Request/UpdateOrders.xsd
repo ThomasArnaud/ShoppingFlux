@@ -7,19 +7,7 @@
                     <xs:complexType>
                         <xs:sequence>
                             <xs:element name="IdOrder" type="xs:string" />
-                            <xs:element name="Marketplace">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="Amazon"/>
-                                        <xs:enumeration value="eBay"/>
-                                        <xs:enumeration value="Fnac"/>
-                                        <xs:enumeration value="Pixmania"/>
-                                        <xs:enumeration value="RueDuCommerce"/>
-                                        <xs:enumeration value="PriceMinister"/>
-                                        <xs:enumeration value="CDiscount"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-                            </xs:element>
+                            <xs:element name="Marketplace" type="xs:string" />
                             <xs:element name="Status">
                                 <xs:simpleType>
                                     <xs:restriction base="xs:string">

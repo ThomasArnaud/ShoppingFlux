@@ -25,6 +25,7 @@ use Thelia\Core\Event\Order\OrderManualEvent;
 use Thelia\Core\Event\TheliaEvents;
 use Thelia\Log\Tlog;
 use Thelia\Model\LangQuery;
+use Thelia\Model\OrderQuery;
 use Thelia\Model\OrderStatusQuery;
 use Thelia\Model\ProductSaleElementsQuery;
 use Thelia\Model\Cart;
@@ -113,6 +114,8 @@ class ApiCall implements EventSubscriberInterface
             );
         }
 
+        $notImportedOrders = [];
+
         /**
          * Then treat the orders
          */
@@ -161,14 +164,14 @@ class ApiCall implements EventSubscriberInterface
                 $deliveryAddressArray["FirstName"],
                 $deliveryAddressArray["LastName"],
                 $deliveryAddressArray["Street"],
-                "",
-                "",
+                $deliveryAddressArray["Street1"],
+                $deliveryAddressArray["Street2"],
                 $deliveryAddressArray["PostalCode"],
                 $deliveryAddressArray["Town"],
                 $deliveryCountryId,
-                "",
+                $deliveryAddressArray["PhoneMobile"],
                 $deliveryAddressArray["Phone"],
-                ""
+                $deliveryAddressArray["Company"]
             );
 
             $deliveryAddressEvent->setCustomer(
@@ -184,14 +187,14 @@ class ApiCall implements EventSubscriberInterface
                 $invoiceAddressArray["FirstName"],
                 $invoiceAddressArray["LastName"],
                 $invoiceAddressArray["Street"],
-                "",
-                "",
+                $invoiceAddressArray["Street1"],
+                $invoiceAddressArray["Street2"],
                 $invoiceAddressArray["PostalCode"],
                 $invoiceAddressArray["Town"],
-                $invoiceCountryId,
-                "",
+                $deliveryCountryId,
+                $invoiceAddressArray["PhoneMobile"],
                 $invoiceAddressArray["Phone"],
-                ""
+                $invoiceAddressArray["Company"]
             );
 
             $invoiceAddressEvent->setCustomer(
@@ -252,9 +255,17 @@ class ApiCall implements EventSubscriberInterface
              */
             $lang = LangQuery::create()->findOneByLocale($invoiceCountry->getLocale());
             $currency = CurrencyQuery::create()->findOneByCode("EUR");
+
+            $order = OrderQuery::create()
+                ->findOneByRef($orderArray["IdOrder"]);
+
+            if($order !== null) {
+                $order->delete();
+            }
+
             $order = new Order();
 
-            $order->setRef($orderArray["IdOrder"])
+            $order
                 ->setPostage($orderArray["TotalShipping"])
                 ->setChoosenDeliveryAddress(
                     $deliveryAddressEvent->getAddress()->getId()
@@ -285,7 +296,9 @@ class ApiCall implements EventSubscriberInterface
             $dispatcher->dispatch(TheliaEvents::ORDER_CREATE_MANUAL, $orderEvent);
 
             $placedOrder = $orderEvent->getPlacedOrder();
-            $placedOrder->setPaid();
+            $placedOrder
+                ->setRef($orderArray["IdOrder"])
+                ->setPaid();
 
             $validOrders []= [
                 "IdOrder" => $placedOrder->getRef(),
@@ -317,21 +330,11 @@ class ApiCall implements EventSubscriberInterface
                 ->error($response->getFormattedError())
             ;
         }
-
-        if (!$validOrdersApi->compareResponseRequest()) {
-            $errorMessage = "Bad response from ShoppingFlux: ".
-                $response->getGroup("ValidOrders")
-                    ->C14N()
-            ;
-
-            $this->logger
-                ->error($errorMessage);
-        }
     }
 
     public function processUpdateOrders(OrderEvent $event)
     {
-        if ($event->getPaymentModule() == $this->shoppingFluxPaymentModuleId) {
+        if ($event->getOrder()->getPaymentModuleId() == $this->shoppingFluxPaymentModuleId) {
             $status = $event->getStatus();
 
             $allowedStatus = [
@@ -405,6 +408,7 @@ class ApiCall implements EventSubscriberInterface
         return array(
             ShoppingFluxEvents::GET_ORDERS_EVENT => array("processGetOrders", 128),
             TheliaEvents::ORDER_UPDATE_STATUS => array("processUpdateOrders", 128),
+
         );
     }
 

@@ -18,6 +18,7 @@
       <xs:element type="xs:string" name="Call"/>
       <xs:element type="xs:string" name="Token"/>
       <xs:element type="xs:string" name="Mode"/>
+      <xs:element type="xs:string" name="Version"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ResultType">

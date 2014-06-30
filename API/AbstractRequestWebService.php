@@ -84,7 +84,7 @@ abstract class AbstractRequestWebService extends AbstractWebService
 
         $this->addPostData('REQUEST',(string) $this->request);
 
-        parent::call();
+        return parent::call();
     }
 
     public function getValidationSchema()
