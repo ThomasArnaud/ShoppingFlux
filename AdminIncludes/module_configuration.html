@@ -11,27 +11,35 @@
         </div>
     </div>
     {form name="shoppingflux.configure"}
-    {if $form_error}
-        <div class="row">
-            <div class="col-md-12">
-                <div class="alert alert-danger">
-                    {$form_error_message}
+        {if $form_error}
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="alert alert-danger">
+                        {$form_error_message}
+                    </div>
                 </div>
             </div>
-        </div>
-    {/if}
+        {/if}
 
-    {if $error_message}
-        <div class="alert alert-danger">
-            {$error_message}
-        </div>
-    {/if}
+        {if $error_message}
+            <div class="alert alert-danger">
+                {$error_message}
+            </div>
+        {/if}
 
-    {if $success_message}
-        <div class="alert alert-success">
-            {$success_message}
-        </div>
-    {/if}
+        {if $success_message}
+            <div class="alert alert-success">
+                {$success_message}
+            </div>
+        {/if}
+
+        {if $export_success}
+            {assign link {url path="/cache/export.xml"}}
+            <div class="alert alert-info">
+                {intl l="Export successfully done. You may now download the file or give this link to Shopping Flux" d="shoppingflux.ai"} :
+                <a href="{$link}">{$link}</a>
+            </div>
+        {/if}
         <form method="post" action="{url path='/admin/module/ShoppingFlux/export'}">
             {form_hidden_fields form=$form}
             <div class="row">

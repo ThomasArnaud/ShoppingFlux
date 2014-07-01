@@ -39,6 +39,7 @@ class SaveExportController extends BaseAdminController
 
         $form = new ConfigureForm($this->getRequest());
         $errorMessage = null;
+        $exportSuccess = false;
 
         try {
             $boundForm = $this->validateForm($form, "post");
@@ -64,7 +65,12 @@ class SaveExportController extends BaseAdminController
             }
 
             if ($action === "export") {
-                return $this->export($boundForm);
+                ShoppingFluxConfigQuery::exportXML(
+                    $this->container,
+                    $boundForm->get("lang_id")->getData()
+                );
+
+                $exportSuccess = true;
             }
         } catch (FormValidationException $e) {
             $errorMessage = $this->createStandardFormValidationErrorMessage($e);
@@ -83,7 +89,10 @@ class SaveExportController extends BaseAdminController
 
         return $this->render(
             "module-configure",
-            ["module_code"   => "ShoppingFlux"]
+            [
+                "module_code"   => "ShoppingFlux",
+                "export_success" => $exportSuccess,
+            ]
         );
     }
 
@@ -114,20 +123,5 @@ class SaveExportController extends BaseAdminController
         }
 
         return true;
-    }
-
-    protected function export(Form $form)
-    {
-        $locale = LangQuery::create()
-            ->findOneById($form->get("lang_id")->getData())
-            ->getLocale();
-
-        return Response::create(
-            (new XMLExportProducts($this->container, $locale))->doExport(),
-            200,
-            [
-                "Content-Type" => "application/xml"
-            ]
-        );
     }
 }

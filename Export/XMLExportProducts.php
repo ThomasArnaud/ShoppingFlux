@@ -18,6 +18,8 @@ use Thelia\Model\Cart;
 use Thelia\Model\CartItem;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\CountryQuery;
+use Thelia\Model\Currency;
+use Thelia\Model\Lang;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\TaxQuery;
@@ -63,6 +65,9 @@ class XMLExportProducts
         $this->container = $containerInterface;
     }
 
+    /**
+     * @return string
+     */
     public function doExport()
     {
         /**
@@ -102,11 +107,10 @@ class XMLExportProducts
         $deliveryModule->setRequest($fakeRequest);
 
         /**
-         * Get Real request
+         * Currency
          */
-        /** @var Request $request */
-        $request = $this->container->get("request");
-        $currency = $request->getSession()->getCurrency();
+        $currency = Currency::getDefaultCurrency();
+
 
         // Delivery delay - check if the module is installed
         $deliveryDateModule = ModuleQuery::create()
@@ -335,8 +339,6 @@ class XMLExportProducts
                             $cache["attribute"]["value"][$attributeId] = $attr->getAttributeAv()->getTitle();
 
                         }
-
-
 
                         $pseAttrNode->addChild(
                             $cache["attribute"]["title"][$attributeId],

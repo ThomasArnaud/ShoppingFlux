@@ -11,6 +11,10 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Model;
+use ShoppingFlux\Export\XMLExportProducts;
+use ShoppingFlux\ShoppingFlux;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Thelia\Core\Translation\Translator;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
@@ -114,5 +118,37 @@ class ShoppingFluxConfigQuery
         }
 
         return $shoppingFluxCustomer;
+    }
+
+    public static function exportXML(ContainerInterface $container, $lang_id)
+    {
+
+        $lang = LangQuery::create()
+            ->findOneById($lang_id);
+
+        if ($lang === null) {
+            $lang = Lang::getDefaultLanguage();
+        }
+
+        $locale = $lang->getLocale();
+
+
+        $export = (new XMLExportProducts($container, $locale))->doExport();
+
+        if (false === @file_put_contents($file=THELIA_WEB_DIR . "cache/export.xml", $export)) {
+            throw new \Exception(
+                Translator::getInstance()->trans(
+                    "The file %file has not been written",
+                    [
+                        "%file" => $file
+                    ],
+                    ShoppingFlux::MESSAGE_DOMAIN
+                )
+            );
+        }
+        /**
+         * Prevents write access problems between web export and php-cli export
+         */
+        @chmod($file, 0777);
     }
 }
