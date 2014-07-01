@@ -62,27 +62,36 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
         $rawData = <<<XML
 <?xml version="1.0" encoding="UTF-8"?>
             <Result>
-                    <Request>
+                <Request>
                     <Date>2011-08-09T18:38:16+02:00</Date>
                     <Call>GetOrders</Call>
                     <Token>abcdef0123456789abcdef123456789abcdef123</Token>
                     <Mode>Sandbox</Mode>
+                    <Version>2</Version>
                 </Request>
                 <Response>
                     <Orders>
                         <Order>
                             <IdOrder>123456820006-123456127010</IdOrder>
                             <Marketplace>eBay</Marketplace>
+                            <Currency>EUR</Currency>
                             <TotalAmount>10.99</TotalAmount>
                             <TotalProducts>7.99</TotalProducts>
                             <TotalShipping>3.0</TotalShipping>
+                            <TotalFees/>
                             <NumberOfProducts>1</NumberOfProducts>
                             <OrderDate>2011-07-08T15:32:53+02:00</OrderDate>
+                            <Other/>
+                            <ShippingMethod>Colissimo</ShippingMethod>
                             <BillingAddress>
                                 <LastName>Nom</LastName>
                                 <FirstName/>
                                 <Phone>0123456789</Phone>
+                                <PhoneMobile />
                                 <Street>1 rue du paradis</Street>
+                                <Street1>1 rue du paradis</Street1>
+                                <Street2>1 rue du paradis</Street2>
+                                <Company>Openstudio</Company>
                                 <PostalCode>75000</PostalCode>
                                 <Town>Paris</Town>
                                 <Country>FR</Country>
@@ -92,7 +101,11 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
                                 <LastName>Nom</LastName>
                                 <FirstName/>
                                 <Phone>0123456789</Phone>
+                                <PhoneMobile />
                                 <Street>1 rue du paradis</Street>
+                                <Street1>1 rue du paradis</Street1>
+                                <Street2>1 rue du paradis</Street2>
+                                <Company>Openstudio</Company>
                                 <PostalCode>75000</PostalCode>
                                 <Town>Paris</Town>
                                 <Country>FR</Country>
@@ -103,6 +116,7 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
                                     <SKU>1234</SKU>
                                     <Quantity>1</Quantity>
                                     <Price>7.99</Price>
+                                    <Ecotax>1.0</Ecotax>
                                 </Product>
                             </Products>
                         </Order>
@@ -110,7 +124,6 @@ class GetOrdersTest extends \PHPUnit_Framework_TestCase
                 </Response>
             </Result>
 XML;
-
         $response = new GetOrdersResponse($rawData);
 
         $this->assertEquals(
@@ -140,16 +153,24 @@ XML;
             "Order" => [
                 "IdOrder" => "123456820006-123456127010",
                 "Marketplace"=>"eBay",
+                "Currency"=>"EUR",
                 "TotalAmount"=>"10.99",
                 "TotalProducts"=>"7.99",
                 "TotalShipping"=>"3.0",
+                "TotalFees"=>[],
                 "NumberOfProducts"=>"1",
                 "OrderDate"=>"2011-07-08T15:32:53+02:00",
+                "Other"=>[],
+                "ShippingMethod"=>"Colissimo",
                 "BillingAddress" => [
                     "LastName"=>"Nom",
                     "FirstName"=>[],
                     "Phone"=>"0123456789",
+                    "PhoneMobile"=>[],
                     "Street"=>"1 rue du paradis",
+                    "Street1"=>"1 rue du paradis",
+                    "Street2"=>"1 rue du paradis",
+                    "Company"=>"Openstudio",
                     "PostalCode"=>"75000",
                     "Town"=>"Paris",
                     "Country"=>"FR",
@@ -159,7 +180,11 @@ XML;
                     "LastName"=>"Nom",
                     "FirstName"=>[],
                     "Phone"=>"0123456789",
+                    "PhoneMobile"=>[],
                     "Street"=>"1 rue du paradis",
+                    "Street1"=>"1 rue du paradis",
+                    "Street2"=>"1 rue du paradis",
+                    "Company"=>"Openstudio",
                     "PostalCode"=>"75000",
                     "Town"=>"Paris",
                     "Country"=>"FR",
@@ -170,6 +195,7 @@ XML;
                         "SKU"=>"1234",
                         "Quantity"=>"1",
                         "Price"=>"7.99",
+                        "Ecotax"=>"1.00",
                     ],
                 ],
             ],

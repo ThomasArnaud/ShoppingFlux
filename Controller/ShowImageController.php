@@ -32,7 +32,7 @@ class ShowImageController extends BaseFrontController
             ->findPk($imageId)
         ;
 
-        if($productImage === null) {
+        if ($productImage === null) {
             throw new FileNotFoundException(
                 Translator::getInstance()->trans(
                     "The image id %id doesn't exist",
@@ -66,4 +66,4 @@ class ShowImageController extends BaseFrontController
 
         return new Response($data, 200, ["Content-Type"=>$mime]);
     }
-} 
+}

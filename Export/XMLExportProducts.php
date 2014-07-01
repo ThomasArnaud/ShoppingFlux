@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Export;
-use Assetic\Factory\AssetFactory;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Thelia\Core\HttpFoundation\Request;
@@ -96,7 +95,6 @@ class XMLExportProducts
         $deliveryDateModule = ModuleQuery::create()
             ->findOneByCode("DeliveryDate");
         $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
-
 
         /** @var \Thelia\Model\Product $product */
         foreach ($this->getData() as $product) {

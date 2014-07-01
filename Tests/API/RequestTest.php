@@ -123,6 +123,7 @@ class RequestTest extends \PHPUnit_Framework_TestCase
         <Call>UpdateOrders</Call>
         <Token>foo</Token>
         <Mode>Sandbox</Mode>
+        <Version>2</Version>
     </Request>
     <Response>
         <Orders>
