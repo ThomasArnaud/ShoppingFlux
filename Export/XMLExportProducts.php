@@ -65,12 +65,26 @@ class XMLExportProducts
 
     public function doExport()
     {
+        /**
+         * Define the cache
+         */
+        $cache = [];
+
+        $cache["category"] = [];
+        $cache["breadcrumb"] = [];
+        $cache["feature"]["title"] = [];
+        $cache["feature"]["value"] = [];
+        $cache["attribute"]["title"] = [];
+        $cache["attribute"]["value"] = [];
+
+
+        $fakeCartItem = new CartItem();
+        $fakeCart = new Cart();
+        $fakeCart->addCartItem($fakeCartItem);
+
         /** @var \Thelia\Model\Country $country */
         $country = CountryQuery::create()
             ->findOneByShopCountry(true);
-
-        $taxId = ShoppingFluxConfigQuery::getEcotaxRuleId();
-        $tax = TaxQuery::create()->findPk($taxId);
 
         $deliveryModuleModelId = ShoppingFluxConfigQuery::getDeliveryModuleId();
         $deliveryModuleModel = ModuleQuery::create()->findPk($deliveryModuleModelId);
@@ -81,7 +95,10 @@ class XMLExportProducts
          * Build fake Request to inject in the module
          */
         $fakeRequest = new Request();
-        $fakeRequest->setSession(new FakeSession());
+        $fakeRequest->setSession(
+            (new FakeSession())->setCart($fakeCart)
+        );
+
         $deliveryModule->setRequest($fakeRequest);
 
         /**
@@ -141,40 +158,60 @@ class XMLExportProducts
             /**
              * Compute breadcrumb
              */
-            $breadcrumb = [];
+
             $category = $product->getCategories()[0];
-            $lastCategory = $category->getTitle();
 
-            do {
-                $breadcrumb[] = $category->getTitle();
-            } while (null !== $category = CategoryQuery::create()->findPk($category->getParent()));
+            if (!array_key_exists(
+                $categoryId = $category->getId(),
+                $cache["category"])
+            ) {
+                $cache["category"][$categoryId] = $category->getTitle();
 
-            $reversedBreadcrumb = array_reverse($breadcrumb);
+                $breadcrumb = [];
 
-            $node->addChild("rayon", $lastCategory);
-            $node->addChild("fil-ariane", implode(" > ", $reversedBreadcrumb));
+                do {
+                    $breadcrumb[] = $category->getTitle();
+                } while (null !== $category = CategoryQuery::create()->findPk($category->getParent()));
+
+                $reversedBreadcrumb = array_reverse($breadcrumb);
+
+                $cache["breadcrumb"][$categoryId] = implode(" > ", $reversedBreadcrumb);
+            }
+
+            $node->addChild("rayon", $cache["category"][$categoryId]);
+            $node->addChild("fil-ariane", $cache["breadcrumb"][$categoryId]);
 
             /**
              * Features
              */
             $featuresNode = $node->addChild("caracteristiques");
+
             foreach ($product->getFeatureProducts() as $featureProduct) {
                 if ($featureProduct->getFeatureAv() !== null &&
                     $featureProduct->getFeature() !== null
                 ) {
-                    $featureProduct->getFeatureAv()->setLocale($this->locale);
-                    $featureProduct->getFeature()->setLocale($this->locale);
+                    if (!array_key_exists(
+                        $featureId = $featureProduct->getFeature()->getId(),
+                        $cache["feature"]["title"]
+                    )) {
+                        $featureProduct->getFeatureAv()->setLocale($this->locale);
+                        $featureProduct->getFeature()->setLocale($this->locale);
 
-                    $featuresNode->addChild(
-                        trim(
+                        $cache["feature"]["title"][$featureId] = trim(
                             preg_replace(
                                 "#[^a-z0-9_\-]#i",
                                 "_",
                                 $featureProduct->getFeature()->getTitle()
                             ),
                             "_"
-                        ),
-                        $featureProduct->getFeatureAv()->getTitle()
+                        );
+
+                        $cache["feature"]["value"][$featureId] = $featureProduct->getFeatureAv()->getTitle();
+                    }
+
+                    $featuresNode->addChild(
+                        $cache["feature"]["title"][$featureId],
+                        $cache["feature"]["value"][$featureId]
                     );
                 }
             }
@@ -209,11 +246,7 @@ class XMLExportProducts
                  * Fake the cart so that module::getPostage() returns the price
                  * for only one object
                  */
-                $fakeCartItem = new CartItem();
                 $fakeCartItem->setProductSaleElements($pse);
-                $fakeCart = new Cart();
-                $fakeCart->addCartItem($fakeCartItem);
-                $deliveryModule->getRequest()->getSession()->setCart($fakeCart);
 
                 /**
                  * If the object is too heavy, don't export it
@@ -283,19 +316,31 @@ class XMLExportProducts
                 /** @var \Thelia\Model\AttributeCombination $attr */
                 foreach ($pse->getAttributeCombinations() as $attr) {
                     if ($attr->getAttribute() !== null && $attr->getAttributeAv() !== null) {
-                        $attr->getAttribute()->setLocale($this->locale);
-                        $attr->getAttributeAv()->setLocale($this->locale);
+                        if (!array_key_exists(
+                            $attributeId = $attr->getAttribute()->getId(),
+                            $cache["attribute"]["title"]
+                        )) {
+                            $attr->getAttribute()->setLocale($this->locale);
+                            $attr->getAttributeAv()->setLocale($this->locale);
 
-                        $pseAttrNode->addChild(
-                            trim(
+                            $cache["attribute"]["title"][$attributeId] = trim(
                                 preg_replace(
                                     "#[^a-z0-9_\-]#i",
                                     "_",
                                     $attr->getAttribute()->getTitle()
                                 ),
                                 "_"
-                            ),
-                            $attr->getAttributeAv()->getTitle()
+                            );
+
+                            $cache["attribute"]["value"][$attributeId] = $attr->getAttributeAv()->getTitle();
+
+                        }
+
+
+
+                        $pseAttrNode->addChild(
+                            $cache["attribute"]["title"][$attributeId],
+                            $cache["attribute"]["value"][$attributeId]
                         );
                     }
                 }
