@@ -19,10 +19,8 @@ use Thelia\Model\CartItem;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\Currency;
-use Thelia\Model\Lang;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\ProductQuery;
-use Thelia\Model\TaxQuery;
 use Thelia\Model\TaxRuleCountry;
 use Thelia\Model\TaxRuleCountryQuery;
 use Thelia\Module\Exception\DeliveryException;
@@ -82,7 +80,6 @@ class XMLExportProducts
         $cache["attribute"]["title"] = [];
         $cache["attribute"]["value"] = [];
 
-
         $fakeCartItem = new CartItem();
         $fakeCart = new Cart();
         $fakeCart->addCartItem($fakeCartItem);
@@ -110,7 +107,6 @@ class XMLExportProducts
          * Currency
          */
         $currency = Currency::getDefaultCurrency();
-
 
         // Delivery delay - check if the module is installed
         $deliveryDateModule = ModuleQuery::create()

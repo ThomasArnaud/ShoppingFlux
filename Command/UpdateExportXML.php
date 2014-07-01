@@ -67,4 +67,4 @@ class UpdateExportXML extends ContainerAwareCommand
             )
         );
     }
-} 
+}

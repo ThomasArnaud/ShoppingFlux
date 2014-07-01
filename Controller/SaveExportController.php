@@ -11,7 +11,6 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Controller;
-use ShoppingFlux\Export\XMLExportProducts;
 use ShoppingFlux\Form\ConfigureForm;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
@@ -22,7 +21,6 @@ use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
-use Thelia\Model\LangQuery;
 
 /**
  * Class SaveExportController

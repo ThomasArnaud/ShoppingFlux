@@ -14,7 +14,6 @@ namespace ShoppingFlux\Tools;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Thelia\Tools\URL as BaseURL;
 
-
 /**
  * Class URL
  * @package ShoppingFlux\Tools
@@ -41,5 +40,4 @@ class URL extends BaseURL
         return preg_replace("#(http|https)\://localhost#i", "$1://".$this->domain, $generated);
     }
 
-
-} 
+}

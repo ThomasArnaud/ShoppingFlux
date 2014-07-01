@@ -23,7 +23,6 @@ use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
 use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
-use Thelia\Module\BaseModule;
 
 /**
  * Class ShoppingFluxConfigQuery
@@ -131,7 +130,6 @@ class ShoppingFluxConfigQuery
         }
 
         $locale = $lang->getLocale();
-
 
         $export = (new XMLExportProducts($container, $locale))->doExport();
 
