@@ -14,13 +14,16 @@ namespace ShoppingFlux\Export;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Thelia\Core\HttpFoundation\Request;
+use Thelia\Model\Base\TaxQuery;
 use Thelia\Model\Cart;
 use Thelia\Model\CartItem;
 use Thelia\Model\CategoryQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\Currency;
 use Thelia\Model\ModuleQuery;
+use Thelia\Model\Product;
 use Thelia\Model\ProductQuery;
+use Thelia\Model\Tax;
 use Thelia\Model\TaxRuleCountry;
 use Thelia\Model\TaxRuleCountryQuery;
 use Thelia\Module\Exception\DeliveryException;
@@ -107,6 +110,37 @@ class XMLExportProducts
          * Currency
          */
         $currency = Currency::getDefaultCurrency();
+
+        /**
+         * Load ecotax
+         */
+        $ecotax = TaxQuery::create()
+            ->findPk(ShoppingFluxConfigQuery::getEcotaxRuleId());
+
+        /**
+         * If there's a problem in the configuration, load a fake tax
+         */
+        if($ecotax === null) {
+            $ecotax = new Tax();
+            $ecotax->setType("Thelia\\TaxEngine\\TaxType\\FixAmoutTaxType");
+            $ecotax->setRequirements(
+                base64_encode(
+                    json_encode(
+                        ["amount" => 0]
+                    )
+                )
+            );
+        }
+        /**
+         * Load the tax instance
+         */
+        $ecotaxInstance = $ecotax->getTypeInstance();
+
+        // Compatibility with Thelia <= 2.0.2
+        $ecotaxInstance->loadRequirements($ecotax->getRequirements());
+
+        // We can pass any product as Argument, it is not used
+        $ecotax = $ecotaxInstance->fixAmountRetriever(new Product());
 
         // Delivery delay - check if the module is installed
         $deliveryDateModule = ModuleQuery::create()
@@ -288,19 +322,12 @@ class XMLExportProducts
                  */
                 $pseNode->addChild("id", $product->getId()."_".$pse->getId());
 
-                /**
-                 * Get ecotax
-                 */
                 $pseNode->addChild(
                     "prix-ttc",
                     $pse->getPromo() ?
                         $pse->getPromoPrice() :
                         $pse->getPrice()
                 );
-
-                /** @var \Thelia\TaxEngine\TaxType\FixAmountTaxType $taxInstance */
-                $taxInstance = $tax->getTypeInstance();
-                $ecotax = $taxInstance->fixAmountRetriever($product);
 
                 $pseNode->addChild("prix-ttc-barre", $pse->getPromo() ? $pse->getPrice() : null);
                 $pseNode->addChild("quantite", $pse->getQuantity());

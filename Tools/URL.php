@@ -39,5 +39,4 @@ class URL extends BaseURL
 
         return preg_replace("#(http|https)\://localhost#i", "$1://".$this->domain, $generated);
     }
-
 }
