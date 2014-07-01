@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #Shopping Flux module v1.0
 author: <bperche@openstudio.fr>
 
@@ -94,7 +93,8 @@ Notes:
 <a name="fig1"></a>fig.1
 ```
 $ (crontab -u username -l; echo "@hourly php chemin-de-Thelia/Thelia module:shoppingflux:getorders" ) | crontab -u username -
-=======
+```
+
 #Shopping Flux module v1.0
 author: <bperche@openstudio.fr>
 
@@ -157,7 +157,7 @@ ainsi que votre écotaxe.
 Activez le bouton "En production" quand vous avez fini, puis enregistrez.
 
 Vous pouvez ensuite utiliser le bouton exporter pour obtenir un fichier XML de votre catalogue,
-pour l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui interroge Shopping Flux pour les denières
+pour l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui interroge Shopping Flux pour les dernières
 commandes.
 
 Notes:
@@ -215,5 +215,4 @@ Notes:
 <a name="fig1"></a>fig.1
 ```
 $ (crontab -u username -l; echo "@hourly php chemin-de-Thelia/Thelia module:shoppingflux:getorders" ) | crontab -u username -
->>>>>>> dc0ac8529589d712367056db3ea52d17fd635ce3
 ```
