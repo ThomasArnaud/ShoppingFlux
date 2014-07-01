@@ -34,4 +34,9 @@
     <route id="shoppingflux.getorders" path="/admin/module/ShoppingFlux/GetOrders">
         <default key="_controller">ShoppingFlux\Controller\GetOrdersController::getOrders</default>
     </route>
+
+    <route id="shoppingflux.show.image" path="/shoppingflux/image/{imageId}">
+        <default key="_controller">ShoppingFlux\Controller\ShowImageController::getImage</default>
+        <requirement key="imageId">\d+</requirement>
+    </route>
 </routes>

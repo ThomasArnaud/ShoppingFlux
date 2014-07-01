@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Export;
+use Assetic\Factory\AssetFactory;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Thelia\Core\HttpFoundation\Request;
@@ -91,6 +92,12 @@ class XMLExportProducts
         $request = $this->container->get("request");
         $currency = $request->getSession()->getCurrency();
 
+        // Delivery delay - check if the module is installed
+        $deliveryDateModule = ModuleQuery::create()
+            ->findOneByCode("DeliveryDate");
+        $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
+
+
         /** @var \Thelia\Model\Product $product */
         foreach ($this->getData() as $product) {
             $product->setLocale($this->locale);
@@ -115,10 +122,20 @@ class XMLExportProducts
             $node->addChild("description-courte", $product->getChapo());
             $node->addChild("description", $product->getDescription());
 
-            // Delivery delay - check if the module is installed
-            $deliveryDateModule = ModuleQuery::create()
-                ->findOneByCode("DeliveryDate");
-            $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
+            /**
+             * Images URL
+             */
+            $imagesNode = $node->addChild("images");
+
+            /** @var \Thelia\Model\ProductImage $productImage */
+            foreach ($product->getProductImages() as $productImage) {
+                $imagesNode->addChild(
+                    "image",
+                    URL::getInstance()->absoluteUrl(
+                        "/shoppingflux/image/" . $productImage->getId()
+                    )
+                );
+            }
 
             $node->addChild("marque");
             $node->addChild("url-marque");
