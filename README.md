@@ -37,7 +37,7 @@ sera présente sur la liste des modules.
 ### <a name="fr_FR_Install"></a> Installation
 
 Pour installer ShoppingFlux, vous pouvez télécharger les archives des deux modules et les
-décomprésser dans le dossier
+décompresser dans le dossier
 
 ```chemin-de-Thelia/local/modules```
 
@@ -60,7 +60,7 @@ ainsi que votre écotaxe.
 Activez le bouton "En production" quand vous avez fini, puis enregistrez.
 
 Vous pouvez ensuite utiliser le bouton exporter pour obtenir un fichier XML de votre catalogue,
-pour l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui intéroge Shopping Flux pour les denières
+pour l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui interroge Shopping Flux pour les denières
 commandes.
 
 Notes:
