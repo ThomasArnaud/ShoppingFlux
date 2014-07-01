@@ -5,47 +5,31 @@ author: <bperche@openstudio.fr>
 
 ### [fr_FR](#fr_FR)
 
-1. [Pré-requis](#fr_FR_Requirements)
+1. [Installation](#fr_FR_Install)
 
-2. [Installation](#fr_FR_Install)
-
-3. [Utilisation](#fr_FR_Usage)
+2. [Utilisation](#fr_FR_Usage)
 
 
 ### en_US
 
-1. [Requirements](#en_US_Requirements)
+1. [How to install](#en_US_Install)
 
-2. [How to install](#en_US_Install)
-
-3. [How to use](#en_US_Usage)
+2. [How to use](#en_US_Usage)
 
 
 ##  <a name="fr_FR"></a> fr_FR
 
-### <a name="fr_FR_Requirements"></a> Pré-requis
-
-Le module ShoppingFlux fait parti d'un lot de deux modules:
-
-- Ce module: ShoppingFlux
-
-- Le module ShoppingFluxPayment
-
-Ce second est optionnel, mais s'il n'est pas présent, une erreur signalant des fichiers manquants
-sera présente sur la liste des modules.
-
 ### <a name="fr_FR_Install"></a> Installation
 
-Pour installer ShoppingFlux, vous pouvez télécharger les archives des deux modules et les
-décomprésser dans le dossier
+Pour installer ShoppingFlux, vous pouvez télécharger l'archive et la décomprésser dans le dossier
+```
+chemin-de-Thelia/local/modules
+```
 
-```chemin-de-Thelia/local/modules```
-
-ou vous pouvez les installer via git:
+ou vous pouvez l'installer via git:
 
 ```
 $ cd chemin-de-Thelia/local/modules
-$ git clone https://github.com/thelia-modules/ShoppingFluxPayment.git
 $ git clone https://github.com/thelia-modules/ShoppingFlux.git
 ```
 
@@ -72,26 +56,17 @@ Notes:
 
 ##  <a name="en_US"></a> en_US
 
-### <a name="en_US_Requirements"></a> Requirements
-
-The Shopping Flux module is a part of a bundle of two:
-
-- This module: ShoppingFlux
-
-- The ShoppingFluxPayement
-
-The second is optional, but if it's not present, an error signaling "Missing files " will be present
-on the modules page.
-
 ### <a name="en_US_Install"></a> How to install
 
-You can install this module by downloading the two archives and uncompressing them into
-```path-to-Thelia/local/modules```
+You can install this module by downloading the archive and uncompressing it into
 
-Or you may install them with git:
+```
+path-to-Thelia/local/modules
+```
+
+Or you may install it with git:
 ```
 $ cd path-to-Thelia/local/modules
-$ git clone https://github.com/thelia-modules/ShoppingFluxPayment.git
 $ git clone https://github.com/thelia-modules/ShoppingFlux.git
 ```
 

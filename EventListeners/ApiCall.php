@@ -18,6 +18,7 @@ use ShoppingFlux\API\ValidOrders;
 use ShoppingFlux\Event\ApiCallEvent;
 use ShoppingFlux\Event\ShoppingFluxEvents;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
+use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Thelia\Core\Event\Address\AddressCreateOrUpdateEvent;
 use Thelia\Core\Event\Order\OrderEvent;
@@ -78,7 +79,7 @@ class ApiCall implements EventSubscriberInterface
          * Create a fake user ShoppingFlux if it doesn't exist
          */
         $this->shoppingFluxCustomer = ShoppingFluxConfigQuery::createShoppingFluxCustomer();
-        $this->shoppingFluxPaymentModule = ShoppingFluxConfigQuery::createFakePaymentModule();
+        $this->shoppingFluxPaymentModule = (new ShoppingFlux())->getModuleModel();
         $this->shoppingFluxPaymentModuleId = $this->shoppingFluxPaymentModule->getId();
     }
 

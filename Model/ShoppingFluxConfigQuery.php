@@ -115,21 +115,4 @@ class ShoppingFluxConfigQuery
 
         return $shoppingFluxCustomer;
     }
-
-    public static function createFakePaymentModule()
-    {
-        $shoppingFluxPaymentModule = ModuleQuery::create()
-            ->findOneByCode("ShoppingFluxPayment");
-
-        if (null === $shoppingFluxPaymentModule) {
-            $shoppingFluxPaymentModule = new Module();
-
-            $shoppingFluxPaymentModule
-                ->setCode("ShoppingFluxPayment")
-                ->setType(BaseModule::PAYMENT_MODULE_TYPE)
-                ->save();
-        }
-
-        return $shoppingFluxPaymentModule;
-    }
 }

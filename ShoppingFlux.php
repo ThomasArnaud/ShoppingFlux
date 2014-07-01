@@ -27,10 +27,6 @@ class ShoppingFlux extends BaseModule
          */
         ShoppingFluxConfigQuery::createShoppingFluxCustomer();
 
-        /**
-         * Create a fake payment module for shopping flux orders
-         */
-        ShoppingFluxConfigQuery::createFakePaymentModule();
     }
 
 }
