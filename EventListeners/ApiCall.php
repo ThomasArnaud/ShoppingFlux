@@ -47,7 +47,7 @@ class ApiCall implements EventSubscriberInterface
     /**
      * Destination class used
      */
-    const LOGCLASS = "\\Thelia\\Log\\Destination\\TlogDestinationFile";
+    const LOG_CLASS = "\\Thelia\\Log\\Destination\\TlogDestinationFile";
 
     /**
      * @var \Thelia\Log\Tlog
@@ -72,8 +72,8 @@ class ApiCall implements EventSubscriberInterface
     public function __construct()
     {
         $this->logger =  Tlog::getNewInstance();
-        $this->logger->setDestinations(static::LOGCLASS);
-        $this->logger->setConfig(self::LOGCLASS, 0, THELIA_ROOT . "log" . DS . "log-shopping-flux.txt");
+        $this->logger->setDestinations(static::LOG_CLASS);
+        $this->logger->setConfig(self::LOG_CLASS, 0, THELIA_ROOT . "log" . DS . "log-shopping-flux.txt");
 
         /**
          * Create a fake user ShoppingFlux if it doesn't exist

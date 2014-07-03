@@ -33,12 +33,19 @@
             </div>
         {/if}
 
-        {if $export_success}
-            {assign link {url path="/cache/export.xml"}}
-            <div class="alert alert-info">
-                {intl l="Export successfully done. You may now download the file or give this link to Shopping Flux" d="shoppingflux.ai"} :
-                <a href="{$link}">{$link}</a>
-            </div>
+        {if $export}
+            {assign link {url path="/shoppingflux/export"}}
+            {if $export == "success"}
+                <div class="alert alert-info">
+                    {intl l="Export successfully done. You may now download the file or give this link to Shopping Flux" d="shoppingflux.ai"} :
+                    <a href="{$link}">{$link}</a>
+                </div>
+            {else}
+                <div class="alert alert-warning">
+                    {intl l="Warning, there's a problem with the export cache, please check the logs for more details. Whatever, you may still give this link to shopping flux, it works" d="shoppingflux.ai"} :
+                    <a href="{$link}">{$link}</a>
+                </div>
+            {/if}
         {/if}
         <form method="post" action="{url path='/admin/module/ShoppingFlux/export'}">
             {form_hidden_fields form=$form}

@@ -166,8 +166,6 @@ Notes:
 
 - Vous pouvez automatiser la récupération des commandes via une tâche cron ([voir fig.1](#fig1))
 
-- Vous pouvez aussi automatiser l'export de votre catalogue via une tâche cron ([voir fig.2](#fig2))
-
 ##  <a name="en_US"></a> en_US
 
 ### <a name="en_US_Requirements"></a> Requirements
@@ -211,16 +209,10 @@ Notes:
 
 - You can automate the function "get orders" by creating a cron task ([see fig.1](#fig1))
 
-- You can also automate the export of your catalog by creating a cron task ([see fig.2](#fig2))
 
 ## Other
 
 <a name="fig1"></a>fig.1
 ```
 $ (crontab -u username -l; echo "@hourly php chemin-de-Thelia/Thelia module:shoppingflux:getorders" ) | crontab -u username -
-```
-
-<a name="fig2></a>fig.2
-```
-$ (crontab -u username -l; echo "@hourly php chemin-de-Thelia/Thelia module:shoppingflux:updatexml www.yourdomain.com" ) | crontab -u username -
 ```

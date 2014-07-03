@@ -119,11 +119,11 @@ class ShoppingFluxConfigQuery
         return $shoppingFluxCustomer;
     }
 
-    public static function exportXML(ContainerInterface $container, $lang_id)
+    public static function exportXML(ContainerInterface $container)
     {
 
         $lang = LangQuery::create()
-            ->findOneById($lang_id);
+            ->findOneById(static::getDefaultLangId());
 
         if ($lang === null) {
             $lang = Lang::getDefaultLanguage();
@@ -133,20 +133,6 @@ class ShoppingFluxConfigQuery
 
         $export = (new XMLExportProducts($container, $locale))->doExport();
 
-        if (false === @file_put_contents($file=THELIA_WEB_DIR . "cache/export.xml", $export)) {
-            throw new \Exception(
-                Translator::getInstance()->trans(
-                    "The file %file has not been written",
-                    [
-                        "%file" => $file
-                    ],
-                    ShoppingFlux::MESSAGE_DOMAIN
-                )
-            );
-        }
-        /**
-         * Prevents write access problems between web export and php-cli export
-         */
-        @chmod($file, 0777);
+        return $export;
     }
 }

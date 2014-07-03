@@ -16,7 +16,6 @@
 
     <commands>
         <command class="ShoppingFlux\Command\GetOrdersCommand" />
-        <command class="ShoppingFlux\Command\UpdateExportXML" />
     </commands>
 
     <services>

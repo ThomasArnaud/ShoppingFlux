@@ -39,4 +39,8 @@
         <default key="_controller">ShoppingFlux\Controller\ShowImageController::getImage</default>
         <requirement key="imageId">\d+</requirement>
     </route>
+
+    <route id="shoppingflux.get.export" path="/shoppingflux/export">
+        <default key="_controller">ShoppingFlux\Controller\GetExportController::getExport</default>
+    </route>
 </routes>
