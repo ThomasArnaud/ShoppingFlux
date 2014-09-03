@@ -1,6 +1,7 @@
 {
     "name": "thelia/shopping-flux",
     "type": "thelia-module",
+    "license": "LGPL-3.0+",
     "require": {
         "thelia/installer": "~1.0"
     },
