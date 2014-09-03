@@ -209,6 +209,8 @@ class XMLExportProducts
 
                 $reversedBreadcrumb = array_reverse($breadcrumb);
 
+                $reversedBreadcrumb[] = $product->getTitle();
+
                 $cache["breadcrumb"][$categoryId] = implode(" > ", $reversedBreadcrumb);
             }
 
