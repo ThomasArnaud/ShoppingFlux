@@ -197,11 +197,13 @@ Before using ShoppingFlux, you'll need to have a tax rule for Ecotax: if you don
 just create a Fix Amout tax. Then go to the module's configuration page, give your Shopping Flux
 token, the language you want to export your catalog, the delivery module that you will use
 ( do never use a pick-up & Go store delivery module ), and your ecotax.
-Activate the button "In production" when you're done, then save.
 
-You can use the export button to get an XML file of your catalog, in order to import it in
-Shopping Flux service, and the button "Get orders" that asks Shopping Flux for new orders on
-marketplaces
+Finally, activate the button "In production" and save.
+
+The button "Export" allows you to get an XML file of your catalog, in order to import it in your Shopping Flux manager.
+
+The button "Get orders" imports in Thelia all the orders placed from the marketplaces you chose.
+
 
 Notes:
 
