@@ -35,17 +35,13 @@ $ git clone https://github.com/thelia-modules/ShoppingFlux.git
 
 ### <a name="fr_FR_Usage"></a> Utilisation
 
-Pour utiliser ShoppingFlux, allez sur la page de configuration de ce module,
-vous devez créer une taxe de montant fixe ( Ecotaxe ) si elle n'existe pas déjà,
-puis allez sur la page de configuration du module, renseignez votre token shoppingflux,
-La langue dans laquelle vous souhaitez exporter votre catalogue, le module de livraison
-que vous utilisez ( n'utilisez en aucun cas un module de livraison en point relais ),
-ainsi que votre écotaxe.
+Pour utiliser ShoppingFlux, vous devez créer une taxe de montant fixe ( Ecotaxe ) si elle n'existe pas déjà.
+Ensuite allez sur la page de configuration du module, renseignez votre token shopping flux,
+la langue dans laquelle vous souhaitez exporter votre catalogue, le module de livraison que vous utilisez (n'utilisez en aucun cas un module de livraison en point relais),ainsi que votre écotaxe.
+
 Activez le bouton "En production" quand vous avez fini, puis enregistrez.
 
-Vous pouvez ensuite utiliser le bouton exporter pour obtenir un fichier XML de votre catalogue,
-pour l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui intéroge Shopping Flux pour les denières
-commandes.
+Vous pouvez ensuite utiliser le bouton exporter pour obtenir un fichier XML de votre catalogue et l'importer dans Shopping Flux, et le bouton "Récupérer les commandes" qui interroge Shopping Flux et récupère les denières commandes passées sur les marketplaces sélectionnées.
 
 Notes:
 
