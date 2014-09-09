@@ -25,7 +25,7 @@ abstract class AbstractWebService
     /**
      * This is the webservice url.
      */
-    const SERVICE_URL = 'https://clients.shopping-flux.com/webservice/';
+    const SERVICE_URL = 'https://ws.shopping-flux.com/';
 
     const REQUEST_MODE_SANDBOX = "Sandbox";
 
