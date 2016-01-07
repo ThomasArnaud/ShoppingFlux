@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Form;
+
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -60,8 +61,7 @@ class ConfigureForm extends BaseForm
         $langsId = LangQuery::create()
             ->select("Id")
             ->find()
-            ->toArray()
-        ;
+            ->toArray();
         $langsId = array_flip($langsId);
 
         $deliveryModulesId = ModuleQuery::create()
@@ -69,16 +69,14 @@ class ConfigureForm extends BaseForm
             ->filterByActivate(1)
             ->select("Id")
             ->find()
-            ->toArray()
-        ;
+            ->toArray();
         $deliveryModulesId = array_flip($deliveryModulesId);
 
         $taxesId = TaxQuery::create()
             ->filterByType("Thelia\\TaxEngine\\TaxType\\FixAmountTaxType")
             ->select("Id")
             ->find()
-            ->toArray()
-        ;
+            ->toArray();
         $taxesId = array_flip($taxesId);
 
         $translator = Translator::getInstance();
@@ -87,49 +85,72 @@ class ConfigureForm extends BaseForm
          * Then build the form
          */
         $this->formBuilder
-            ->add("token", "text", array(
-                "label" => $translator->trans("ShoppingFlux Token", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for" => "shopping_flux_token"],
-                "constraints" => [new NotBlank()],
-                "required"  => true,
-                "data" => ShoppingFluxConfigQuery::getToken(),
-            ))
-            ->add("prod", "checkbox", array(
-                "label" => $translator->trans("In production", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for" => "shopping_flux_prod"],
-                "required" => false,
-                "data" => ShoppingFluxConfigQuery::getProd(),
-            ))
-            ->add("delivery_module_id", "choice", array(
-                "label" => $translator->trans("Delivery module", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for" => "shopping_flux_delivery_module_id"],
-                "required" => true,
-                "multiple" => false,
-                "choices" => $deliveryModulesId,
-                "data" => ShoppingFluxConfigQuery::getDeliveryModuleId(),
-            ))
-            ->add("lang_id", "choice", array(
-                "label" => $translator->trans("Language", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for" => "shopping_flux_lang"],
-                "required" => true,
-                "multiple" => false,
-                "choices" => $langsId,
-                "data" => $lang->getId(),
-            ))
-            ->add("ecotax_id", "choice", array(
-                "label" => $translator->trans("Ecotax rule", [], ShoppingFlux::MESSAGE_DOMAIN),
-                "label_attr" => ["for" => "shopping_flux_ecotax"],
-                "required" => true,
-                "choices" => $taxesId,
-                "multiple" => false,
-                "data" => ShoppingFluxConfigQuery::getEcotaxRuleId(),
-            ))
-            ->add("action_type", "choice", array(
-                "required" => true,
-                "choices" => ["save"=>0, "export"=>1],
-                "multiple" => false,
-            ))
-        ;
+            ->add(
+                "token",
+                "text",
+                array(
+                    "label" => $translator->trans("ShoppingFlux Token", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_token"],
+                    "constraints" => [new NotBlank()],
+                    "required"  => true,
+                    "data" => ShoppingFluxConfigQuery::getToken(),
+                )
+            )
+            ->add(
+                "prod",
+                "checkbox",
+                array(
+                    "label" => $translator->trans("In production", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_prod"],
+                    "required" => false,
+                    "data" => ShoppingFluxConfigQuery::getProd(),
+                )
+            )
+            ->add(
+                "delivery_module_id",
+                "choice",
+                array(
+                    "label" => $translator->trans("Delivery module", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_delivery_module_id"],
+                    "required" => true,
+                    "multiple" => false,
+                    "choices" => $deliveryModulesId,
+                    "data" => ShoppingFluxConfigQuery::getDeliveryModuleId(),
+                )
+            )
+            ->add(
+                "lang_id",
+                "choice",
+                array(
+                    "label" => $translator->trans("Language", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_lang"],
+                    "required" => true,
+                    "multiple" => false,
+                    "choices" => $langsId,
+                    "data" => ShoppingFluxConfigQuery::getDefaultLang()->getId(),
+                )
+            )
+            ->add(
+                "ecotax_id",
+                "choice",
+                array(
+                    "label" => $translator->trans("Ecotax rule", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_ecotax"],
+                    "required" => true,
+                    "choices" => $taxesId,
+                    "multiple" => false,
+                    "data" => ShoppingFluxConfigQuery::getEcotaxRuleId(),
+                )
+            )
+            ->add(
+                "action_type",
+                "choice",
+                array(
+                    "required" => true,
+                    "choices" => ["save"=>0, "export"=>1],
+                    "multiple" => false,
+                )
+            );
     }
 
     /**
@@ -139,5 +160,4 @@ class ConfigureForm extends BaseForm
     {
         return "configure_shopping_flux_form";
     }
-
 }

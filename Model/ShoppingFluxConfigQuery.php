@@ -11,17 +11,15 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Model;
+
 use ShoppingFlux\Export\XMLExportProducts;
-use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Thelia\Core\Translation\Translator;
 use Thelia\Model\ConfigQuery;
 use Thelia\Model\Customer;
 use Thelia\Model\CustomerQuery;
 use Thelia\Model\CustomerTitleQuery;
 use Thelia\Model\Lang;
 use Thelia\Model\LangQuery;
-use Thelia\Model\Module;
 use Thelia\Model\ModuleQuery;
 
 /**
@@ -71,7 +69,7 @@ class ShoppingFluxConfigQuery
         ConfigQuery::write("shopping_flux_delivery_module_id", $moduleId);
     }
 
-    public static function getDefaultLangId()
+    public static function getDefaultLang()
     {
         $id = ConfigQuery::read("shopping_flux_lang_id");
 
@@ -81,7 +79,7 @@ class ShoppingFluxConfigQuery
         return $lang === null ? 0 : $lang;
     }
 
-    public static function setDefaultLang($langId)
+    public static function setDefaultLangId($langId)
     {
         ConfigQuery::write("shopping_flux_lang_id", $langId);
     }
@@ -112,8 +110,7 @@ class ShoppingFluxConfigQuery
                 ->setCustomerTitle(CustomerTitleQuery::create()->findOne())
                 ->setLastname("ShoppingFlux")
                 ->setFirstname("ShoppingFlux")
-                ->save()
-            ;
+                ->save();
         }
 
         return $shoppingFluxCustomer;
@@ -121,9 +118,7 @@ class ShoppingFluxConfigQuery
 
     public static function exportXML(ContainerInterface $container)
     {
-
-        $lang = LangQuery::create()
-            ->findOneById(static::getDefaultLangId());
+        $lang = static::getDefaultLang();
 
         if ($lang === null) {
             $lang = Lang::getDefaultLanguage();

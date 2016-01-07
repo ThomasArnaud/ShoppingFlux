@@ -11,12 +11,12 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Controller;
+
 use ShoppingFlux\Form\ConfigureForm;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Form\Form;
 use Thelia\Controller\Admin\BaseAdminController;
-use Thelia\Core\HttpFoundation\Response;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
@@ -50,14 +50,16 @@ class SaveExportController extends BaseAdminController
                         "success_message",
                         Translator::getInstance()->trans(
                             "Configuration successfully saved",
-                            [],ShoppingFlux::MESSAGE_DOMAIN
+                            [],
+                            ShoppingFlux::MESSAGE_DOMAIN
                         )
                     );
             } else {
                 throw new \Exception(
                     Translator::getInstance()->trans(
                         $msg,
-                        [], ShoppingFlux::MESSAGE_DOMAIN
+                        [],
+                        ShoppingFlux::MESSAGE_DOMAIN
                     )
                 );
             }
@@ -79,8 +81,7 @@ class SaveExportController extends BaseAdminController
 
             $this->getParserContext()
                 ->addForm($form)
-                ->setGeneralError($errorMessage)
-            ;
+                ->setGeneralError($errorMessage);
         }
 
         return $this->render(
@@ -99,7 +100,7 @@ class SaveExportController extends BaseAdminController
                 $form->get("token")->getData()
             );
 
-            ShoppingFluxConfigQuery::setDefaultLang(
+            ShoppingFluxConfigQuery::setDefaultLangId(
                 $form->get("lang_id")->getData()
             );
 

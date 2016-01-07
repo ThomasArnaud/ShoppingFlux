@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Controller;
+
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
 use Thelia\Controller\Front\BaseFrontController;
@@ -145,7 +146,7 @@ class GetExportController extends BaseFrontController
                         ShoppingFlux::MESSAGE_DOMAIN
                     )
                 );
-            } else if(!file_exists($cacheFile)) {
+            } elseif (!file_exists($cacheFile)) {
                 $writeCache = true;
             }
         }
@@ -177,4 +178,4 @@ class GetExportController extends BaseFrontController
             ]
         );
     }
-} 
+}
