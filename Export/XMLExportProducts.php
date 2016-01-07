@@ -11,6 +11,7 @@
 /*************************************************************************************/
 
 namespace ShoppingFlux\Export;
+
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Thelia\Core\HttpFoundation\Request;
@@ -18,24 +19,22 @@ use Thelia\Model\Base\TaxQuery;
 use Thelia\Model\Cart;
 use Thelia\Model\CartItem;
 use Thelia\Model\CategoryQuery;
+use Thelia\Model\ConfigQuery;
 use Thelia\Model\CountryQuery;
 use Thelia\Model\Currency;
 use Thelia\Model\ModuleQuery;
 use Thelia\Model\Product;
 use Thelia\Model\ProductQuery;
 use Thelia\Model\Tax;
-use Thelia\Model\TaxRuleCountry;
 use Thelia\Model\TaxRuleCountryQuery;
 use Thelia\Module\Exception\DeliveryException;
-use Thelia\TaxEngine\TaxEngine;
 use Thelia\Tools\URL;
 
 /**
  * Class XMLExportProducts
  * @package ShoppingFlux\Export
  * @author Benjamin Perche <bperche@openstudio.fr>
- *
- * This class generate a french XML of the product catalog, because ShoppingFlux is french.
+ * @author Thomas Arnaud <tarnaud@openstudio.fr>
  */
 class XMLExportProducts
 {
@@ -44,7 +43,7 @@ class XMLExportProducts
      *
      * The root tag name
      */
-    protected $root = "produits";
+    protected $root = "products";
 
     protected $locale;
 
@@ -76,6 +75,7 @@ class XMLExportProducts
          */
         $cache = [];
 
+        $cache["brand"] = [];
         $cache["category"] = [];
         $cache["breadcrumb"] = [];
         $cache["feature"]["title"] = [];
@@ -88,12 +88,12 @@ class XMLExportProducts
         $fakeCart->addCartItem($fakeCartItem);
 
         /** @var \Thelia\Model\Country $country */
-        $country = CountryQuery::create()
-            ->findOneByShopCountry(true);
+        $country = CountryQuery::create()->findOneById(ConfigQuery::create()->read('store_country', null));
 
         $deliveryModuleModelId = ShoppingFluxConfigQuery::getDeliveryModuleId();
         $deliveryModuleModel = ModuleQuery::create()->findPk($deliveryModuleModelId);
-        /** @var \Thelia\Module\BaseModule $deliveryModule */
+
+        /** @var \Thelia\Module\AbstractDeliveryModule $deliveryModule */
         $deliveryModule = $deliveryModuleModel->getModuleInstance($this->container);
 
         /**
@@ -120,7 +120,7 @@ class XMLExportProducts
         /**
          * If there's a problem in the configuration, load a fake tax
          */
-        if($ecotax === null) {
+        if ($ecotax === null) {
             $ecotax = new Tax();
             $ecotax->setType("Thelia\\TaxEngine\\TaxType\\FixAmoutTaxType");
             $ecotax->setRequirements(
@@ -131,6 +131,7 @@ class XMLExportProducts
                 )
             );
         }
+
         /**
          * Load the tax instance
          */
@@ -141,11 +142,6 @@ class XMLExportProducts
 
         // We can pass any product as Argument, it is not used
         $ecotax = $ecotaxInstance->fixAmountRetriever(new Product());
-
-        // Delivery delay - check if the module is installed
-        $deliveryDateModule = ModuleQuery::create()
-            ->findOneByCode("DeliveryDate");
-        $deliveryDateModuleExists = null !== $deliveryDateModule && $deliveryDateModule->getActivate();
 
         /** @var \Thelia\Model\Product $product */
         foreach ($this->getData() as $product) {
@@ -186,24 +182,29 @@ class XMLExportProducts
                 );
             }
 
-            $node->addChild("marque");
+            /**
+             * Product Brand
+             */
+            $brand = $product->getBrand();
+            $brand->setLocale($this->locale);
+            if (!array_key_exists($brandId = $brand->getId(), $cache["brand"])) {
+                $cache["brand"][$brandId] = $brand->getTitle();
+            }
+            $node->addChild("marque", $cache["brand"][$brandId]);
             $node->addChild("url-marque");
 
             /**
              * Compute breadcrumb
              */
-
             $category = $product->getCategories()[0];
 
-            if (!array_key_exists(
-                $categoryId = $category->getId(),
-                $cache["category"])
-            ) {
+            if (!array_key_exists($categoryId = $category->getId(), $cache["category"])) {
                 $cache["category"][$categoryId] = $category->getTitle();
 
                 $breadcrumb = [];
 
                 do {
+                    $category->setLocale($this->locale);
                     $breadcrumb[] = $category->getTitle();
                 } while (null !== $category = CategoryQuery::create()->findPk($category->getParent()));
 
@@ -257,7 +258,6 @@ class XMLExportProducts
              */
             $taxRuleCountry = TaxRuleCountryQuery::create()
                 ->filterByTaxRule($product->getTaxRule())
-                ->filterByCountry($country)
                 ->findOne();
 
             $tax = $taxRuleCountry->getTax();
@@ -300,23 +300,6 @@ class XMLExportProducts
                 $deliveryTimeMin = null;
                 $deliveryTimeMax = null;
 
-                /**
-                 * Handle the delivery time if the module exists
-                 */
-                if ($deliveryDateModuleExists) {
-                    $deliveryDate = \DeliveryDate\Model\ProductDateQuery::create()
-                        ->findPk($pse->getId());
-
-                    $deliveryTimeMin = $pse->getQuantity() ?
-                        $deliveryDate->getDeliveryTimeMin() :
-                        $deliveryDate->getRestockTimeMin()
-                    ;
-                    $deliveryTimeMax = $pse->getQuantity() ?
-                        $deliveryDate->getDeliveryTimeMax() :
-                        $deliveryDate->getRestockTimeMax()
-                    ;
-                }
-
                 $pseNode = $psesNode->addChild("declinaison");
 
                 /**
@@ -326,9 +309,7 @@ class XMLExportProducts
 
                 $pseNode->addChild(
                     "prix-ttc",
-                    $pse->getPromo() ?
-                        $pse->getPromoPrice() :
-                        $pse->getPrice()
+                    $pse->getPromo() ? $pse->getPromoPrice() : $pse->getPrice()
                 );
 
                 $pseNode->addChild("prix-ttc-barre", $pse->getPromo() ? $pse->getPrice() : null);
@@ -336,9 +317,9 @@ class XMLExportProducts
                 $pseNode->addChild("ean", $pse->getEanCode());
                 $pseNode->addChild("poids", $pse->getWeight());
                 $pseNode->addChild("ecotaxe", $ecotax);
-                $pseNode->addChild("frais-de-port",$shipping_price);
-                $pseNode->addChild("delai-livraison-mini",$deliveryTimeMin);
-                $pseNode->addChild("delai-livraison-maxi",$deliveryTimeMax);
+                $pseNode->addChild("frais-de-port", $shipping_price);
+                $pseNode->addChild("delai-livraison-mini", $deliveryTimeMin);
+                $pseNode->addChild("delai-livraison-maxi", $deliveryTimeMax);
 
                 $pseAttrNode = $pseNode->addChild("attributs");
 
@@ -393,6 +374,5 @@ class XMLExportProducts
         $query = ProductQuery::create();
 
         return $query->find();
-
     }
 }

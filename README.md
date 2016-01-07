@@ -1,5 +1,4 @@
-#Shopping Flux module v1.0
-author: <bperche@openstudio.fr>
+#Shopping Flux module v1.1
 
 ##Summary
 
@@ -91,8 +90,7 @@ Notes:
 $ (crontab -u username -l; echo "@hourly php chemin-de-Thelia/Thelia module:shoppingflux:getorders" ) | crontab -u username -
 ```
 
-#Shopping Flux module v1.0
-author: <bperche@openstudio.fr>
+#Shopping Flux module v1.1
 
 ##Summary
 
@@ -116,17 +114,6 @@ author: <bperche@openstudio.fr>
 
 ##  <a name="fr_FR"></a> fr_FR
 
-### <a name="fr_FR_Requirements"></a> Pré-requis
-
-Le module ShoppingFlux fait parti d'un lot de deux modules:
-
-- Ce module: ShoppingFlux
-
-- Le module ShoppingFluxPayment
-
-Ce second est optionnel, mais s'il n'est pas présent, une erreur signalant des fichiers manquants
-sera présente sur la liste des modules.
-
 ### <a name="fr_FR_Install"></a> Installation
 
 Pour installer ShoppingFlux, vous pouvez télécharger les archives des deux modules et les
@@ -138,7 +125,6 @@ ou vous pouvez les installer via git:
 
 ```
 $ cd chemin-de-Thelia/local/modules
-$ git clone https://github.com/thelia-modules/ShoppingFluxPayment.git
 $ git clone https://github.com/thelia-modules/ShoppingFlux.git
 ```
 
@@ -164,14 +150,6 @@ Notes:
 
 ##  <a name="en_US"></a> en_US
 
-### <a name="en_US_Requirements"></a> Requirements
-
-The Shopping Flux module is a part of a bundle of two:
-
-- This module: ShoppingFlux
-
-- The ShoppingFluxPayement
-
 The second is optional, but if it's not present, an error signaling "Missing files " will be present
 on the modules page.
 
@@ -183,7 +161,6 @@ You can install this module by downloading the two archives and uncompressing th
 Or you may install them with git:
 ```
 $ cd path-to-Thelia/local/modules
-$ git clone https://github.com/thelia-modules/ShoppingFluxPayment.git
 $ git clone https://github.com/thelia-modules/ShoppingFlux.git
 ```
 
