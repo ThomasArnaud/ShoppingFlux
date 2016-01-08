@@ -76,7 +76,7 @@ class ShoppingFluxConfigQuery
         $lang = LangQuery::create()
             ->findPk($id);
 
-        return $lang === null ? 0 : $lang;
+        return $lang;
     }
 
     public static function setDefaultLangId($langId)

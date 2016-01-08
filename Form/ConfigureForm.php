@@ -55,8 +55,11 @@ class ConfigureForm extends BaseForm
         /**
          * Get information
          */
-
-        $lang = Lang::getDefaultLanguage();
+        if (ShoppingFluxConfigQuery::getDefaultLang() !== null) {
+            $langId = ShoppingFluxConfigQuery::getDefaultLang()->getId();
+        } else {
+            $langId = Lang::getDefaultLanguage()->getId();
+        }
 
         $langsId = LangQuery::create()
             ->select("Id")
@@ -127,7 +130,7 @@ class ConfigureForm extends BaseForm
                     "required" => true,
                     "multiple" => false,
                     "choices" => $langsId,
-                    "data" => ShoppingFluxConfigQuery::getDefaultLang()->getId(),
+                    "data" => $langId,
                 )
             )
             ->add(
