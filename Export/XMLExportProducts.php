@@ -122,14 +122,8 @@ class XMLExportProducts
          */
         if ($ecotax === null) {
             $ecotax = new Tax();
-            $ecotax->setType("Thelia\\TaxEngine\\TaxType\\FixAmoutTaxType");
-            $ecotax->setRequirements(
-                base64_encode(
-                    json_encode(
-                        ["amount" => 0]
-                    )
-                )
-            );
+            $ecotax->setType('\Thelia\TaxEngine\TaxType\FixAmountTaxType')
+                ->setRequirements(array('amount' => 0));
         }
 
         /**
@@ -197,7 +191,8 @@ class XMLExportProducts
              * Compute breadcrumb
              */
             $category = $product->getCategories()[0];
-
+            $category->setLocale($this->locale);
+            
             if (!array_key_exists($categoryId = $category->getId(), $cache["category"])) {
                 $cache["category"][$categoryId] = $category->getTitle();
 
