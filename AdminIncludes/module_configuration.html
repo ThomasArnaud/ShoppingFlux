@@ -3,13 +3,15 @@
         <div class="col-md-12 title title-without-tabs">
             {intl l="Export your catalog" d="shoppingflux.ai"}
 
+            
             <a href="{url path='/admin/module/ShoppingFlux/GetOrders'}">
-                <button class="btn btn-default btn-info pull-right">
+                <button {if !{config key='shopping_flux_token'}}disabled{/if} class="btn btn-default btn-info pull-right">
                     {intl l="Get orders" d="shoppingflux.ai"}
                 </button>
             </a>
         </div>
     </div>
+
     {form name="shoppingflux.configure"}
     {if $form_error}
     <div class="row">
@@ -57,7 +59,7 @@
                         {$label}
                     </label>
 
-                    <input type="text" name="{$name}" value="{$value}" placeholder="{$label}" class="form-control" id="{$label_attr.for}" required/>
+                    <input type="text" name="{$name}" value="{$value}" placeholder="{$label}" class="form-control" id="{$label_attr.for}"/>
 
                     {if $error }
                     <span class="help-block">{$message}</span>

@@ -14,7 +14,6 @@ namespace ShoppingFlux\Form;
 
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
-use Symfony\Component\Validator\Constraints\NotBlank;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\BaseForm;
 use Thelia\Model\Lang;
@@ -94,7 +93,7 @@ class ConfigureForm extends BaseForm
                 array(
                     "label" => $translator->trans("ShoppingFlux Token", [], ShoppingFlux::MESSAGE_DOMAIN),
                     "label_attr" => ["for" => "shopping_flux_token"],
-                    "constraints" => [new NotBlank()],
+                    "constraints" => [],
                     "required"  => true,
                     "data" => ShoppingFluxConfigQuery::getToken(),
                 )
