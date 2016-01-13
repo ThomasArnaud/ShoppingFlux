@@ -179,12 +179,17 @@ class XMLExportProducts
             /**
              * Product Brand
              */
-            $brand = $product->getBrand();
-            $brand->setLocale($this->locale);
-            if (!array_key_exists($brandId = $brand->getId(), $cache["brand"])) {
-                $cache["brand"][$brandId] = $brand->getTitle();
+            if ($product->getBrand()) {
+                $brand = $product->getBrand();
+                $brand->setLocale($this->locale);
+
+                if (!array_key_exists($brandId = $brand->getId(), $cache["brand"])) {
+                    $cache["brand"][$brandId] = $brand->getTitle();
+                }
+                $node->addChild("marque", $cache["brand"][$brandId]);
+            } else {
+                $node->addChild("marque", null);
             }
-            $node->addChild("marque", $cache["brand"][$brandId]);
             $node->addChild("url-marque");
 
             /**
