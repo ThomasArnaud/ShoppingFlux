@@ -3,7 +3,6 @@
         <div class="col-md-12 title title-without-tabs">
             {intl l="Export your catalog" d="shoppingflux.ai"}
 
-            
             <a href="{url path='/admin/module/ShoppingFlux/GetOrders'}">
                 <button {if !{config key='shopping_flux_token'}}disabled{/if} class="btn btn-default btn-info pull-right">
                     {intl l="Get orders" d="shoppingflux.ai"}
@@ -68,6 +67,23 @@
                 {/form_field}
             </div>
             <div class="col-md-6">
+                {form_field form=$form field="client_login"}
+                <div class="form-group {if $error}has-error{/if}">
+                    <label for="{$label_attr.for}">
+                        {$label}
+                    </label>
+
+                    <input type="text" name="{$name}" value="{$value}" placeholder="{$label}" class="form-control" id="{$label_attr.for}"/>
+
+                    {if $error }
+                    <span class="help-block">{$message}</span>
+                    {/if}
+                </div>
+                {/form_field}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 {form_field form=$form field="lang_id"}
                 <div class="form-group {if $error}has-error{/if}">
                     <label for="{$label_attr.for}">
@@ -89,7 +105,6 @@
                 {/form_field}
             </div>
         </div>
-        <br/>
         <div class="row">
             <div class="col-md-6">
                 {form_field form=$form field="delivery_module_id"}
@@ -136,7 +151,6 @@
                 {/form_field}
             </div>
         </div>
-        <br/>
         <div class="row">
             <div class="col-md-6">
                 {form_field form=$form field="prod"}
@@ -160,6 +174,44 @@
                     </button>
                     <button type="submit" class="btn btn-primary" value="export" name="{$name}">
                         {intl l="Export" d="shoppingflux.ai"}
+                    </button>
+                </div>
+                {/form_field}
+            </div>
+        </div>
+    </form>
+    {/form}
+</div>
+
+<div class="general-block-decorator">
+    <div class="row">
+        <div class="col-md-12 title title-without-tabs">
+            {intl l="Choose the url of your source feed" d="shoppingflux.ai"}
+            {$token = {config key='shopping_flux_token'}}
+            {$client_login = {config key='shopping_flux_client_login'}}
+            {$feed_url = {config key='shopping_flux_feed_url'}}
+            <a href="{url path='/admin/module/ShoppingFlux/FeedUpdate'}">
+                <button {if !$feed_url}disabled{/if} {if !$client_login}disabled{/if} {if !$token}disabled{/if} class="btn btn-default btn-info pull-right">
+                {intl l="Update the Feed Url" d="shoppingflux.ai"}
+                </button>
+            </a>
+        </div>
+    </div>
+
+    {form name="shoppingflux.update.feed"}
+    <form method="post" action="{url path='/admin/module/ShoppingFlux/updateFeed'}">
+        {form_hidden_fields form=$form}
+        <div class="row">
+            <div class="col-md-6">
+                {form_field form=$form field="feed_url"}
+                <div class="form-group {if $error}has-error{/if}">
+                    <label for="{$label_attr.for}">
+                        {$label}
+                    </label>
+
+                    <input type="url" name="{$name}" value="{$value}" placeholder="{$label}" class="form-control" id="{$label_attr.for}"/>
+                    <button type="submit" name="shoppingflux_update_feed" value="save" class="form-submit-button btn btn-sm btn-default" title="{intl d='shoppingflux.bo.default' l='Save'}">
+                        {intl d='shoppingflux.bo.default' l='Save'}
                     </button>
                 </div>
                 {/form_field}

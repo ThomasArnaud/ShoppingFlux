@@ -4,31 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <!--
-
-    if a /admin/module/shoppingflux/ route is provided, a "Configuration" button will be displayed
-    for the module in the module list. Clicking this button will invoke this route.
-
-    <route id="my_route_id" path="/admin/module/shoppingflux">
-        <default key="_controller">ShoppingFlux\Full\Class\Name\Of\YourConfigurationController::methodName</default>
-    </route>
-
-    <route id="my_route_id" path="/admin/module/shoppingflux/route-name">
-        <default key="_controller">ShoppingFlux\Full\Class\Name\Of\YourAdminController::methodName</default>
-    </route>
-
-    <route id="my_route_id" path="/my/route/name">
-        <default key="_controller">ShoppingFlux\Full\Class\Name\Of\YourOtherController::methodName</default>
-    </route>
-
-    ...add as many routes as required.
-
-    <route>
-    ...
-    </route>
-    -->
     <route id="shoppingflux.export" path="/admin/module/ShoppingFlux/export" methods="post">
         <default key="_controller">ShoppingFlux\Controller\SaveExportController::saveOrExport</default>
+    </route>
+
+    <route id="shoppingflux.update.feed" path="/admin/module/ShoppingFlux/updateFeed" methods="post">
+        <default key="_controller">ShoppingFlux\Controller\SaveExportController::updateFeedUrl</default>
     </route>
 
     <route id="shoppingflux.getorders" path="/admin/module/ShoppingFlux/GetOrders">

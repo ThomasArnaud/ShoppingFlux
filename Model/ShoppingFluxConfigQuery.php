@@ -43,6 +43,19 @@ class ShoppingFluxConfigQuery
     }
 
     /**
+     * @return mixed
+     */
+    public static function getClientLogin()
+    {
+        return ConfigQuery::read("shopping_flux_client_login");
+    }
+
+    public static function setClientLogin($value)
+    {
+        ConfigQuery::write("shopping_flux_client_login", $value);
+    }
+
+    /**
      * @return bool
      */
     public static function getProd()
@@ -92,6 +105,19 @@ class ShoppingFluxConfigQuery
     public static function setEcotaxRule($taxId)
     {
         ConfigQuery::write("shopping_flux_ecotax_id", $taxId);
+    }
+
+    /**
+     * @return mixed
+     */
+    public static function getFeedUrl()
+    {
+        return ConfigQuery::read("shopping_flux_feed_url");
+    }
+
+    public static function setFeedUrl($value)
+    {
+        ConfigQuery::write("shopping_flux_feed_url", $value);
     }
 
     /**

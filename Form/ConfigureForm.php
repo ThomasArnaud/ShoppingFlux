@@ -152,6 +152,17 @@ class ConfigureForm extends BaseForm
                     "choices" => ["save"=>0, "export"=>1],
                     "multiple" => false,
                 )
+            )
+            ->add(
+                "client_login",
+                "text",
+                array(
+                    "label" => $translator->trans("ShoppingFlux Login", [], ShoppingFlux::MESSAGE_DOMAIN),
+                    "label_attr" => ["for" => "shopping_flux_login"],
+                    "constraints" => [],
+                    "required"  => true,
+                    "data" => ShoppingFluxConfigQuery::getClientLogin(),
+                )
             );
     }
 

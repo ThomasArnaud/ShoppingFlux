@@ -16,11 +16,13 @@ use ShoppingFlux\Form\ConfigureForm;
 use ShoppingFlux\Model\ShoppingFluxConfigQuery;
 use ShoppingFlux\ShoppingFlux;
 use Symfony\Component\Form\Form;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Translation\Translator;
 use Thelia\Form\Exception\FormValidationException;
+use Thelia\Tools\URL;
 
 /**
  * Class SaveExportController
@@ -100,6 +102,10 @@ class SaveExportController extends BaseAdminController
                 $form->get("token")->getData()
             );
 
+            ShoppingFluxConfigQuery::setClientLogin(
+                $form->get("client_login")->getData()
+            );
+
             ShoppingFluxConfigQuery::setDefaultLangId(
                 $form->get("lang_id")->getData()
             );
@@ -120,5 +126,43 @@ class SaveExportController extends BaseAdminController
         }
 
         return true;
+    }
+
+    public function updateFeedUrl()
+    {
+        if (null !== $response = $this->checkAuth(
+            AdminResources::MODULE,
+            [ShoppingFlux::MESSAGE_DOMAIN],
+            AccessManager::UPDATE
+        )
+        ) {
+            return $response;
+        }
+
+        $form = $this->createForm('shoppingflux.update.feed');
+        $error_message = null;
+
+        try {
+            $validateForm = $this->validateForm($form);
+            $data = $validateForm->getData();
+            var_dump($data["feed_url"]);
+
+            ShoppingFluxConfigQuery::setFeedUrl($data["feed_url"]);
+
+            return RedirectResponse::create(URL::getInstance()->absoluteUrl('/admin/module/ShoppingFlux'));
+
+        } catch (FormValidationException $e) {
+            $error_message = $this->createStandardFormValidationErrorMessage($e);
+        }
+
+        if (null !== $error_message) {
+            $this->setupFormErrorContext(
+                'configuration',
+                $error_message,
+                $form
+            );
+            $response = $this->render("module-configure", ['module_code' => 'ShoppingFlux']);
+        }
+        return $response;
     }
 }
